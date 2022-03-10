@@ -78,8 +78,10 @@ sel_val = 0.7
 inputfile = None
 
 def pie(req):
-    global sel_val
-    global inputfile
+    # global sel_val
+    # global inputfile
+    sel_val = 0.7
+    inputfile = None
     data = {}
     # select value 초기값 설정            
     if req.method == 'POST':
@@ -93,7 +95,7 @@ def pie(req):
             # 첨부 파일 가져오기
             inputfile = req.FILES['inputfile']
             print('inputfile : ', inputfile)
-            req.session['inputfile'] = inputfile
+            # req.session['inputfile'] = inputfile
             # req.set_cookie('inputfile', inputfile, max_age=None)
             
 
