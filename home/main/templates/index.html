@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="get">
+        <button class="btn btn-danger">GET</button>
+    </form>
+
+    <form action="" method="post">
+        {% comment %} {% csrf_token %} {% endcomment %}
+        {% for i in index %}
+            <input id="selected" type="checkbox" name="selected" value={{i}}>{{i}}
+        {% endfor %}
+        <button class="btn btn-primary">저장(POST)</button>
+    </form>
+
+    <h2>{{POST}}</h2>
+    {{selectMatch}}
+{% endblock %}

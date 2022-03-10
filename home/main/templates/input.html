@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    <!-- 파일 upload 받기 -->
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+          file : <input type="file" name="file" accept="image/*">
+        </div>
+        
+        <input type="submit">
+      
+      </form>
+    <!-- 파일 upload 받기 끝 -->
+    </body>
+</html>
