@@ -78,10 +78,10 @@ sel_val = 0.7
 inputfile = None
 
 def pie(req):
-    # global sel_val
-    # global inputfile
-    sel_val = 0.7
-    inputfile = None
+    global sel_val
+    global inputfile
+    # sel_val = 0.7
+    # inputfile = None
     data = {}
     # select value 초기값 설정            
     if req.method == 'POST':
