@@ -8,6 +8,7 @@ import csv
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
+from django.core.files.storage import FileSystemStorage
 
 # Include the `fusioncharts.py` file which has required functions to embed the charts in html page
 from .fusioncharts import FusionCharts
@@ -72,42 +73,42 @@ def getposttest(req):
         return render(req, 'post_list.html', {'GET':'GET방식입니다!!'})
 
 
-global sel_val
-global inputfile
-sel_val = 0.7
-inputfile = None
 
 def pie(req):
-    global sel_val
-    global inputfile
-    # sel_val = 0.7
-    # inputfile = None
+    # 초기값 지정
+    sel_val = 0.7
+    inputfile = None
     data = {}
-    # select value 초기값 설정            
+
+    # ip 가져오기
+    ip = get_client_ip(req)
+   
     if req.method == 'POST':
         if 'sel_val' in req.POST:
-            # 버튼으로 선택한 것들을 받아오기
+            # 선택한 퍼센트 가져오기
             sel_val = req.POST.get('sel_val')
             sel_val = float(sel_val)
-            # req.set_cookie('sel_val', sel_val, max_age=None)
             
         if 'inputfile' in req.FILES:
             # 첨부 파일 가져오기
             inputfile = req.FILES['inputfile']
-            print('inputfile : ', inputfile)
-            # req.session['inputfile'] = inputfile
-            # req.set_cookie('inputfile', inputfile, max_age=None)
-            
+
+            # 첨부파일 저장하기
+            fs = FileSystemStorage()
+            filename = f"temp/{ip}.csv"
+            filename = fs.save(filename, inputfile)
 
     # 버튼 유지
     data['sel_val'] = sel_val
     
     # csv 첨부파일 가져와 읽기
-    # path = 'C:/Users/Song/Desktop/SelfStudy/MakeWebpage/Django/DataAnalysis/home/TEST_0307.csv'
-    if inputfile != None :
-        path = inputfile
+    path = f"temp/{ip}.csv"
+    print("path" + path)
+    try:
         df = pd.read_csv(path)
-
+    except:
+        return render(req, 'pie.html', data)
+    else:
         # train, test set
         trainDf, testDf, people = makeTrainTest(df, sel_val)
 
@@ -138,7 +139,17 @@ def pie(req):
 
         data['output'] = chartObj.render()
 
-    return render(req, 'pie.html', data)
+        return render(req, 'pie.html', data)
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 
 
 def set_cookie(response, key, value, days_expire = 7):
@@ -148,8 +159,6 @@ def set_cookie(response, key, value, days_expire = 7):
         max_age = days_expire * 24 * 60 * 60
     expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
     response.set_cookie(key, value, max_age=max_age, expires=expires, domain=settings.SESSION_COOKIE_DOMAIN, secure=settings.SESSION_COOKIE_SECURE or None)
-
-
 
 def input(req):
     data={}
