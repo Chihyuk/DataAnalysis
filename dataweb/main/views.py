@@ -71,7 +71,6 @@ def index(req):
         # chart.js로 파이차트 그리기
         data['selected_train_label'] = list(people['set'].value_counts().index)
         data['selected_train_data'] = list(people['set'].value_counts().values)
-        print(data['selected_train_label'], data['selected_train_data'])
 
         # 인덱스명만 추출
         index = df.columns.tolist()
@@ -115,6 +114,7 @@ def index(req):
             selected_category_no = list(cat.keys())[nameCat.index(selected_category_name)]      # 이름으로 컬럼 번호 찾기
         # 버튼 선택한 기록이 있는 경우
         if selected_category_name != None or selected_category_no != None:
+            data['selected_category_name'] = selected_category_name
             data['selected_category_label'] = list(cat[selected_category_no].index)
             data['selected_category_data'] = list(cat[selected_category_no].values)
 
