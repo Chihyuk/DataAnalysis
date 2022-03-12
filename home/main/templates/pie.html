@@ -9,6 +9,8 @@
     </form>
     <!-- 파일 upload 받기 끝 -->
 
+    <br>
+
     <!-- 파이 차트 그리기 -->
     <!-- FusionCharts will render here-->
     <div id="chart-1"></div>
@@ -16,6 +18,8 @@
     {{ output|safe }}
     <!-- 파이 차트 그리기 끝 -->
     
+    <br>
+
     <!-- tarin % 비율 정하기-->
     <form action="" method="post">
         {% csrf_token %}
@@ -27,5 +31,64 @@
         </div>
     </form>
     <!-- train % 비율 정하기 끝-->
+    
+    <br>
 
+    <!-- 컬럼 선택창 -->
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for i in index %}
+            <input id="selected_index" type="checkbox" name="selected_index" value={{i}}>{{i}}
+        {% endfor %}
+        <br>
+        <button class="btn btn-primary">데이터프레임 만들기</button>
+    </form>
+    <!-- 컬럼 선택창 끝 -->
+
+    <br>
+
+    <!-- 선택한 컬럼 표현 -->
+    {{selectMatch_index}}
+    <!-- 선택한 컬럼 표현 끝 -->
+
+    <br>
+
+    <!-- 범주 선택창 -->
+    <h3>첨부한 파일에서 범주로 판단되는 것은 아래 버튼에 해당되는 것 입니다.</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for i in category %}
+            <input id="selected_category" type="radio" name="selected_category" value={{i}}>{{i}}
+        {% endfor %}
+        <br>
+        <button class="btn btn-primary">선택</button>
+    </form>
+    <!-- 범주 선택창 끝 -->
+
+    <!-- 범주형 차트 그리기 -->
+    <div id="container" style="width: 75%;">
+        <canvas id="pie-chart"></canvas>
+    </div>
+    <script>
+        var config1 = {
+          type: 'pie',
+          data: {
+            datasets: [{
+              data: {{ selected_category_data|safe }},
+              backgroundColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)', 'rgb(153, 102, 255)']
+            }],
+            labels: {{ selected_category_label|safe }}
+          },
+          options: {
+            responsive: true
+          }
+        };
+    
+        window.onload = function() {
+          var ctx = document.getElementById('pie-chart').getContext('2d');
+          window.myPie = new Chart(ctx, config1);
+        };
+    </script>
+    <!-- 범주형 차트 그리기 끝 -->
+    
 {% endblock %}
