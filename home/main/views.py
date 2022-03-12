@@ -143,6 +143,11 @@ def pie(req):
 
         data['output'] = chartObj.render()
 
+        # chart.js로 파이차트 그리기
+        data['selected_train_label'] = list(people['set'].value_counts().index)
+        data['selected_train_data'] = list(people['set'].value_counts().values)
+        print(data['selected_train_label'], data['selected_train_data'])
+
         # 인덱스명만 추출
         index = df.columns.tolist()
         # X로 시작하는 것들만 추출

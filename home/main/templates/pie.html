@@ -4,8 +4,14 @@
     <!-- 파일 upload 받기 -->
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="inputfile" accept=".csv" value={{ inputfile }}>
-        <input type="submit">
+        <div class="filebox"> 
+            <input class="upload-name" value="파일선택" disabled="disabled"> 
+            <label for="ex_filename">업로드</label> 
+            <input type="file" name="inputfile" accept=".csv" value={{ inputfile }}>
+        </div>
+
+        {% comment %} <input type="file" name="inputfile" accept=".csv" value={{ inputfile }}>
+        <input type="submit"> {% endcomment %}
     </form>
     <!-- 파일 upload 받기 끝 -->
 
@@ -16,6 +22,10 @@
     <div id="chart-1"></div>
     <!-- dumping JavaScript code here -->
     {{ output|safe }}
+
+    <div id="container" style="width: 75%;">
+      <canvas id="train-pie-chart"></canvas>
+    </div>
     <!-- 파이 차트 그리기 끝 -->
     
     <br>
@@ -54,7 +64,7 @@
     <br>
 
     <!-- 범주 선택창 -->
-    <h3>첨부한 파일에서 범주로 판단되는 것은 아래 버튼에 해당되는 것 입니다.</h3>
+    <h3>범주로 판단되는 것은 아래 버튼에 해당되는 것 입니다.</h3>
     <form action="" method="post">
         {% csrf_token %}
         {% for i in category %}
@@ -64,6 +74,33 @@
         <button class="btn btn-primary">선택</button>
     </form>
     <!-- 범주 선택창 끝 -->
+
+    <!-- train 차트 그리기 -->
+    <div id="container" style="width: 75%;">
+      <canvas id="train-pie-chart"></canvas>
+    </div>
+    <script>
+      var train_config = {
+        type: 'pie',
+        data: {
+          datasets: [{
+            data: {{ selected_train_data|safe }},
+            backgroundColor: ['rgb(67, 94, 190)', 'rgb(85, 198, 232)']
+          }],
+          labels: {{ selected_train_label|safe }}
+        },
+        options: {
+          responsive: true
+        }
+      };
+
+      window.onload = function() {
+        var train_ctx = document.getElementById('train-pie-chart').getContext('2d');
+        window.myPie = new Chart(train_ctx, train_config);
+      };
+    </script>
+    <!-- train 차트 그리기 끝 -->
+
 
     <!-- 범주형 차트 그리기 -->
     <div id="container" style="width: 75%;">
@@ -84,10 +121,9 @@
           }
         };
     
-        window.onload = function() {
           var ctx = document.getElementById('pie-chart').getContext('2d');
-          window.myPie = new Chart(ctx, config1);
-        };
+          var myPie = new Chart(ctx, config1);
+
     </script>
     <!-- 범주형 차트 그리기 끝 -->
     
