@@ -18,6 +18,8 @@
     <link rel="shortcut icon" href="{% static 'assets/images/favicon.svg" type="image/x-icon' %}">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="{% static 'assets/js/chartjsLabel.js' %}"></script> <!-- 차트에 값 표시 -->
 </head>
 
 <body>
@@ -34,7 +36,7 @@
                     <div class="col-12 col-lg-9">
                         <h3>Title</h3>
                     </div>
-                    <div class="col-12 col-lg-3">
+                    <div class="col-12 col-lg-3 px-0">
                         <!-- 파일 upload 받기 -->
                         <form action="" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -47,28 +49,11 @@
             </div>
             <div class="page-content">
                 <section class="row">
-                    {% comment %} <div class="col-12 col-lg-12">
-                        <!-- 데이터 입력 창 -->
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <!-- 파일 upload 받기 -->
-                                    <form action="" method="post" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <input type="file" name="inputfile" accept=".csv" value={{ inputfile }}>
-                                        <button class="btn btn-primary">제출</button>
-                                    </form>
-                                    <!-- 파일 upload 받기 끝 -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 데이터 입력 창 -->
-                    </div> {% endcomment %}
                     <div class="col-12 col-lg-6">
                         <!-- 범주 리스트 선택 -->
-                        <div class="card select_box">
+                        <div class="card select_box" style="overflow:auto;">
                             <form action="" method="post">
-                                <div class="row px-3">
+                                <div class="row px-3 py-2 mx-2">
                                     <div class="card-header col-lg-10">
                                         <h4>범주 리스트</h4>
                                     </div>
@@ -76,7 +61,7 @@
                                         <button class="btn btn-primary">선택</button>
                                     </div>
                                 </div>
-                                <div class="card-content pb-4" style="overflow:auto;">
+                                <div class="card-content pb-4">
                                     <div class="row mx-4">
                                         {% csrf_token %}
                                         {% for cat in category %}
@@ -130,6 +115,55 @@
                     </div>
                 </section>
             </div>
+            <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 -->
+            <div class="page-content">
+                <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="card select_box" style="overflow:auto;">
+                            <form action="" method="post">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-8 mx-0">
+                                        <h4>컬럼 리스트</h4>
+                                    </div>
+                                    <div class="card-body col-lg-4 py-3">
+                                        <button class="btn btn-primary">데이터프레임 생성</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4">
+                                        {% csrf_token %}
+                                        {% for ind in index %}
+                                            <div class="col-12 col-lg-3">
+                                                <input id="selected_index" type="checkbox" name="selected_index" value={{ind}}>{{ind}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-10 mx-0 px-3">
+                                    <h4>선택한 데이터프레임</h4>
+                                </div>
+                                <div class="card-body col-lg-2 py-3">
+                                    {% if download_btn %}
+                                        <a href="download/" download>
+                                            <button class="btn btn-primary">{{download_btn}}</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {{selectMatch_index}}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 끝-->
         </div>
     </div>
     <script src="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
@@ -139,8 +173,8 @@
     <script src="{% static 'assets/js/pages/dashboard.js' %}"></script>
 
     <script src="{% static 'assets/js/main.js' %}"></script>
-    <!-- 범주 분포 스크립트 -->
     <script>
+        {% comment %} 범주 분포 스크립트 {% endcomment %}
         var category_config = {
           type: 'pie',
           data: {
@@ -154,32 +188,31 @@
             responsive: true
           }
         };
-
-        window.onload = function() {
+        {% comment %} window.onload = function() {
             var category_ctx = document.getElementById('category-pie-chart').getContext('2d');
             window.categoryPie = new Chart(category_ctx, category_config);
-        };
+        }; {% endcomment %}
+        var category_ctx = document.getElementById('category-pie-chart').getContext('2d');
+        var categoryPie = new Chart(category_ctx, category_config);
     </script>
-    <!-- 범주형 차트 그리기 끝 -->
-
-    <!-- train 차트 그리기 -->
     <script>
+        {% comment %} train 차트 그리기 {% endcomment %}
         var train_config = {
             type: 'pie',
             data: {
-            datasets: [{
+                datasets: [{
                 data: {{ selected_train_data|safe }},
                 backgroundColor: ['rgb(67, 94, 190)', 'rgb(85, 198, 232)']
             }],
             labels: {{ selected_train_label|safe }}
             },
             options: {
-                responsive: true
+                responsive: true,
             }
         };
-
         var train_ctx = document.getElementById('train-pie-chart').getContext('2d');
         var trainPie = new Chart(train_ctx, train_config);
+        
     </script>
     <!-- train 차트 그리기 끝 -->
 </body>

@@ -1,3 +1,5 @@
+import mimetypes
+import os
 from django.shortcuts import render
 from django.http import HttpResponse
 import pandas as pd
@@ -9,6 +11,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
 from django.core.files.storage import FileSystemStorage
+from django.http import FileResponse
 
 # Include the `fusioncharts.py` file which has required functions to embed the charts in html page
 # from .fusioncharts import FusionCharts
@@ -35,21 +38,21 @@ def index(req):
 
     # ip 가져오기
     ip = get_client_ip(req)
+    data['ip'] = ip
    
-    if req.method == 'POST':
-        if 'sel_val' in req.POST:
-            # 선택한 퍼센트 가져오기
-            sel_val = req.POST.get('sel_val')
-            sel_val = float(sel_val)
-            
-        if 'inputfile' in req.FILES:
-            # 첨부 파일 가져오기
-            inputfile = req.FILES['inputfile']
+    if 'sel_val' in req.POST:
+        # 선택한 퍼센트 가져오기
+        sel_val = req.POST.get('sel_val')
+        sel_val = float(sel_val)
+        
+    if 'inputfile' in req.FILES:
+        # 첨부 파일 가져오기
+        inputfile = req.FILES['inputfile']
 
-            # 첨부파일 저장하기
-            fs = FileSystemStorage()
-            filename = f"temp/{ip}.csv"
-            filename = fs.save(filename, inputfile)
+        # temp폴더에 IP주소명으로 첨부파일 저장하기
+        fs = FileSystemStorage()
+        filename = f"temp/{ip}.csv"
+        filename = fs.save(filename, inputfile)
 
     # 버튼 유지
     data['sel_val'] = sel_val
@@ -86,6 +89,12 @@ def index(req):
             # 받아온 인자들로만 데이터프레임 만들기
             selectMatch_index = df[selected_index]
             data['selectMatch_index'] = selectMatch_index
+
+            # ip 주소 .을 _로 바꾸기
+            d_ip = str(ip).replace('.', '_')
+            # 행 번호는 없이 바꾼 이름으로 csv 파일 저장 
+            selectMatch_index.to_csv(f'make/{d_ip}.csv', index = False)
+            data['download_btn'] = "다운로드"
 
 
         # 범주 찾기
@@ -150,3 +159,20 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+def downloadFile(req):
+    ip = get_client_ip(req)
+    d_ip = str(ip).replace('.', '_')
+
+    filename = f'{d_ip}.csv'
+    filepath = "make/" + filename
+    # Open the file for reading content
+    path = open(filepath, 'r')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+    return response
