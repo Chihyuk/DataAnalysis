@@ -44,11 +44,6 @@ def index(req):
     ip = get_client_ip(req)
     data['ip'] = ip
    
-    if 'sel_val' in req.POST:
-        # 선택한 퍼센트 가져오기
-        sel_val = req.POST.get('sel_val')
-        sel_val = float(sel_val)
-        
     if 'inputfile' in req.FILES:
         # 첨부 파일 가져오기
         inputfile = req.FILES['inputfile']
@@ -61,8 +56,16 @@ def index(req):
         if os.path.isfile(filename):
             os.remove(filename)
 
+        # 파일 저장
         filename = fs.save(filename, inputfile)
 
+        return render(req, 'index.html', data)
+
+    if 'sel_val' in req.POST:
+        # 선택한 퍼센트 가져오기
+        sel_val = req.POST.get('sel_val')
+        sel_val = float(sel_val)
+        
     # 버튼 유지
     data['sel_val'] = sel_val
     
