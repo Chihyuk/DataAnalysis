@@ -55,7 +55,12 @@ def index(req):
 
         # temp폴더에 IP주소명으로 첨부파일 저장하기
         fs = FileSystemStorage()
-        filename = f"temp/{ip}.csv"
+        filename = f"./temp/{ip}.csv"
+
+        # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
+        if os.path.isfile(filename):
+            os.remove(filename)
+
         filename = fs.save(filename, inputfile)
 
     # 버튼 유지
