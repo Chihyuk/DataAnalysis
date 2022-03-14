@@ -1,5 +1,6 @@
 import mimetypes
 import os
+import time
 from django.shortcuts import render
 from django.http import HttpResponse
 import pandas as pd
@@ -27,6 +28,9 @@ selected_category_name = None
 selected_category_no = None
 
 def index(req):
+    #  시간 측정
+    start = time.time()
+
     # 값 불러와 사용
     global sel_val
     global inputfile
@@ -96,20 +100,15 @@ def index(req):
             selectMatch_index.to_csv(f'make/{d_ip}.csv', index = False)
             data['download_btn'] = "다운로드"
 
-
+        print("time : ", time.time() - start)
         # 범주 찾기
-        exist = 0                                                           # 유일 값이 있는지 확인하기 위한 변수
         cat = {}                                                            # 해당 value_count 담기
         for i in range(len(df.columns)):
-            if df.iloc[:,i].count() != 0:                                   # 값이 0이 아닌 것들 중
-                for j in range(len(df.iloc[:,i].value_counts().values)):    # 값 분류한 만큼 for문을 돌려서
-                    if df.iloc[:,i].value_counts().values[j] == 1:          # 값 중 유일 값을 가지고 있는 경우 중단시키기
-                        exist = 1
-                        break
-                if exist == 0:                                              # 유일 값을 가지고 있지 않은 경우
-                    if df.iloc[:,i].value_counts().count() != 1:            # 하나만 존재하는 것 제외
-                        cat[i] = df.iloc[:,i].value_counts()
-            exist = 0                                                       # exist 초기화
+            vc = df.iloc[:,i].value_counts()
+            if vc.count() > 1 and vc.count() <= 10 and vc.sort_values().values[0] > 1:           # distinct 값이 1개 초과 10개 이하일 경우 & 오름차순 했을 떄 첫 번째 리스트 값이 1이상인 경우
+                cat[i] = vc
+
+        print("time : ", time.time() - start)
 
         nameCat = []                                                        # 이름으로 HTML에 보여주기 위해 이름만 list로 저장
         for c in cat:
@@ -127,6 +126,7 @@ def index(req):
             data['selected_category_label'] = list(cat[selected_category_no].index)
             data['selected_category_data'] = list(cat[selected_category_no].values)
 
+        print("time : ", time.time() - start)
         return render(req, 'index.html', data)
 
 def makeTrainTest(df, pct):      # 데이터프레임을 인자값으로 받아서 원하는 퍼센트로 train test set 만들기
