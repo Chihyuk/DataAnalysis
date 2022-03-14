@@ -59,8 +59,6 @@ def index(req):
         # 파일 저장
         filename = fs.save(filename, inputfile)
 
-        return render(req, 'index.html', data)
-
     if 'sel_val' in req.POST:
         # 선택한 퍼센트 가져오기
         sel_val = req.POST.get('sel_val')
