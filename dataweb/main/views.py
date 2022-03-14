@@ -22,10 +22,11 @@ global sel_val
 global inputfile
 global selected_category_name
 global selected_category_no
-sel_val = 0.7
-inputfile = None
-selected_category_name = None
-selected_category_no = None
+sel_val = 0.7                       # 기본 초기값
+inputfile = None                    # 입력한 첨부파일
+selected_category_name = None       # 선택한 카테고리명
+selected_category_no = None         # 선택한 카테고리 번호
+                         
 
 def index(req):
     #  시간 측정
@@ -37,8 +38,7 @@ def index(req):
     global selected_category_name
     global selected_category_no
 
-    # 리턴할 값 딕셔너리로 저장
-    data = {}
+    data = {}  
 
     # ip 가져오기
     ip = get_client_ip(req)
@@ -89,9 +89,7 @@ def index(req):
 
         # 인덱스명만 추출
         index = df.columns.tolist()
-        # X로 시작하는 것들만 추출
-        # matching = [i for i in index if i.startswith("X")] 
-        # html에서 사용할 수 있도록 딕셔너리 안에 리스트로 저장
+        # 컬럼 리스트 생성
         data['index'] = index
 
         # selected의 이름을 가진 버튼이 선택된 경우
@@ -106,6 +104,7 @@ def index(req):
             d_ip = str(ip).replace('.', '_')
             # 행 번호는 없이 바꾼 이름으로 csv 파일 저장 
             selectMatch_index.to_csv(f'make/{d_ip}.csv', index = False)
+            # 데이터프레임 다운 버튼 활성화
             data['download_btn'] = "다운로드"
 
         print("time : ", time.time() - start)
@@ -123,18 +122,23 @@ def index(req):
             nameCat.append(cat[c].name)                     
 
         data['category'] = nameCat                                          # 범주에 해당되는 값의 컬럼 번호를 리스트형으로 전달
-        # selected_category의 이름을 가진 버튼이 선택된 경우
-        if 'selected_category' in req.POST:          
-            # 버튼으로 선택한 것들을 받아오기
-            selected_category_name = req.POST.get('selected_category')
-            selected_category_no = list(cat.keys())[nameCat.index(selected_category_name)]      # 이름으로 컬럼 번호 찾기
-        # 버튼 선택한 기록이 있는 경우
-        if selected_category_name != None or selected_category_no != None:
-            data['selected_category_name'] = selected_category_name
-            data['selected_category_label'] = list(cat[selected_category_no].index)
-            data['selected_category_data'] = list(cat[selected_category_no].values)
+        try:
+            # selected_category의 이름을 가진 버튼이 선택된 경우
+            if 'selected_category' in req.POST:          
+                # 버튼으로 선택한 것들을 받아오기
+                selected_category_name = req.POST.get('selected_category')
+                selected_category_no = list(cat.keys())[nameCat.index(selected_category_name)]      # 이름으로 컬럼 번호 찾기
+
+            # 버튼 선택한 기록이 있는 경우
+            if selected_category_name != None and selected_category_no != None:
+                data['selected_category_name'] = selected_category_name
+                data['selected_category_label'] = list(cat[selected_category_no].index)
+                data['selected_category_data'] = list(cat[selected_category_no].values)
+        except:
+            return render(req, 'index.html', data)
 
         print("time : ", time.time() - start)
+
         return render(req, 'index.html', data)
 
 def makeTrainTest(df, pct):      # 데이터프레임을 인자값으로 받아서 원하는 퍼센트로 train test set 만들기
