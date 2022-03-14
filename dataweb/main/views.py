@@ -13,6 +13,7 @@ from django.http import HttpResponse
 import datetime
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
+from sklearn.model_selection import train_test_split
 
 # Include the `fusioncharts.py` file which has required functions to embed the charts in html page
 # from .fusioncharts import FusionCharts
@@ -59,6 +60,7 @@ def index(req):
         # 파일 저장
         filename = fs.save(filename, inputfile)
 
+
     if 'sel_val' in req.POST:
         # 선택한 퍼센트 가져오기
         sel_val = req.POST.get('sel_val')
@@ -67,9 +69,13 @@ def index(req):
     # 버튼 유지
     data['sel_val'] = sel_val
     
+    print("time1 : ", time.time() - start)
+    
     # csv 첨부파일 경로 지정
-    path = f"temp/{ip}.csv"
-    # path = "temp/127.0.0.1.csv"
+    # path = f"temp/{ip}.csv"
+    path = "temp/58.238.38.231.csv"
+
+    print("time2 : ", time.time() - start)
 
     try:
         # 지정한 경로에 있는 csv 파일을 읽어오기
@@ -78,9 +84,10 @@ def index(req):
         # 없으면 내용 없이 return
         return render(req, 'index.html', data)
     else:
+        print("time2-0 : ", time.time() - start)
         # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
-        trainDf, testDf, people = makeTrainTest(df, sel_val)
-
+        x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, sel_val)
+        print("time2-1 : ", time.time() - start)
         # chart.js로 파이차트 그리기
         data['selected_train_label'] = list(people['set'].value_counts().index)
         data['selected_train_data'] = list(people['set'].value_counts().values)
@@ -89,7 +96,7 @@ def index(req):
         index = df.columns.tolist()
         # 컬럼 리스트 생성
         data['index'] = index
-
+        print("time2-2 : ", time.time() - start)
         # selected의 이름을 가진 버튼이 선택된 경우
         if 'selected_index' in req.POST:          
             # 버튼으로 선택한 것들을 받아오기
@@ -105,7 +112,7 @@ def index(req):
             # 데이터프레임 다운 버튼 활성화
             data['download_btn'] = "다운로드"
 
-        print("time : ", time.time() - start)
+        print("time3 : ", time.time() - start)
         # 범주 찾기
         cat = {}                                                            # 해당 value_count 담기
         for i in range(len(df.columns)):
@@ -113,7 +120,7 @@ def index(req):
             if vc.count() > 1 and vc.count() <= 10 and vc.sort_values().values[0] > 1:           # distinct 값이 1개 초과 10개 이하일 경우 & 오름차순 했을 떄 첫 번째 리스트 값이 1이상인 경우
                 cat[i] = vc
 
-        print("time : ", time.time() - start)
+        print("time4 : ", time.time() - start)
 
         nameCat = []                                                        # 이름으로 HTML에 보여주기 위해 이름만 list로 저장
         for c in cat:
@@ -135,32 +142,22 @@ def index(req):
         except:
             return render(req, 'index.html', data)
 
-        print("time : ", time.time() - start)
+        print("time5 : ", time.time() - start)
 
         return render(req, 'index.html', data)
 
 def makeTrainTest(df, pct):      # 데이터프레임을 인자값으로 받아서 원하는 퍼센트로 train test set 만들기
-    # 데이터프레임의 전체 행 수 추출
-    peoCount = len(df)
-    # 중복되지 않는 pct 랜덤 값 추출
-    testRd = []
-    for pc in range(round(peoCount*pct)):
-        temp = random.randrange(0,peoCount-1)
-        while temp in testRd:
-            temp = random.randrange(0,peoCount-1)
-        testRd.append(temp)
-
-    # test df 생성
-    trainDf = df.loc[testRd].sort_index()
-    # train df 생성
-    testDf = df.drop(testRd)
-
-    # 그래프 그리기 위해 test인 사람과 train인 사람 라벨링하여 df로 만들기
-    people1 = pd.DataFrame({'people':trainDf.index, 'set':'Train'})
-    people2 = pd.DataFrame({'people':testDf.index, 'set':'Test'})
+    start = time.time()
+    data = df.iloc[:,1:-1]
+    target = df.iloc[:,1]
+    x_train, x_valid, y_train, y_valid = train_test_split(data, target, test_size=pct, shuffle=True, stratify=target)
+    
+    people1 = pd.DataFrame({'people':y_train.index, 'set':'Train'})
+    people2 = pd.DataFrame({'people':y_valid.index, 'set':'Test'})
     people = pd.concat([people1, people2])
 
-    return trainDf, testDf, people
+    print("time2-0-4 : ", time.time() - start)
+    return x_train, x_valid, y_train, y_valid, people
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -175,6 +172,40 @@ def downloadFile(req):
     d_ip = str(ip).replace('.', '_')
 
     filename = f'{d_ip}.csv'
+    filepath = "make/" + filename
+    # Open the file for reading content
+    path = open(filepath, 'r')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+    return response
+
+def downloadTrainFile(req):
+    ip = get_client_ip(req)
+    d_ip = str(ip).replace('.', '_')
+
+    filename = f'{d_ip}test.csv'
+    filepath = "make/" + filename
+    # Open the file for reading content
+    path = open(filepath, 'r')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+    return response
+
+def downloadTestFile(req):
+    ip = get_client_ip(req)
+    d_ip = str(ip).replace('.', '_')
+
+    filename = f'{d_ip}train.csv'
     filepath = "make/" + filename
     # Open the file for reading content
     path = open(filepath, 'r')
