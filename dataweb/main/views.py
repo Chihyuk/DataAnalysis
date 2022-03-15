@@ -72,8 +72,8 @@ def index(req):
     print("time1 : ", time.time() - start)
     
     # csv 첨부파일 경로 지정
-    # path = f"temp/{ip}.csv"
-    path = "temp/58.238.38.231.csv"
+    path = f"temp/{ip}.csv"
+    # path = "temp/58.238.38.231.csv"
 
     print("time2 : ", time.time() - start)
 
@@ -149,14 +149,14 @@ def index(req):
 def makeTrainTest(df, pct):      # 데이터프레임을 인자값으로 받아서 원하는 퍼센트로 train test set 만들기
     start = time.time()
     data = df.iloc[:,1:-1]
-    target = df.iloc[:,1]
-    x_train, x_valid, y_train, y_valid = train_test_split(data, target, test_size=pct, shuffle=True, stratify=target)
+    target = df.iloc[:,0]
+    x_train, x_valid, y_train, y_valid = train_test_split(data, target, test_size=pct, shuffle=True)
     
     people1 = pd.DataFrame({'people':y_train.index, 'set':'Train'})
     people2 = pd.DataFrame({'people':y_valid.index, 'set':'Test'})
     people = pd.concat([people1, people2])
 
-    print("time2-0-4 : ", time.time() - start)
+    print("time2-0-4 : ", time.time() - start)                          
     return x_train, x_valid, y_train, y_valid, people
 
 def get_client_ip(request):
