@@ -19,7 +19,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="{% static 'assets/js/chartjsLabel.js' %}"></script> <!-- 차트에 값 표시 -->
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    
 </head>
 
 <body>
@@ -57,16 +59,19 @@
                                     <div class="card-header col-lg-10">
                                         <h4>범주 리스트</h4>
                                     </div>
-                                    <div class="card-body col-lg-2 py-3">
+                                    <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                         <button class="btn btn-primary">선택</button>
                                     </div>
                                 </div>
                                 <div class="card-content pb-4">
-                                    <div class="row mx-4">
+                                    <div class="row mx-4 py-2">
                                         {% csrf_token %}
                                         {% for cat in category %}
-                                        <div class="col-12 col-lg-3">
-                                            <input id="selected_category" type="radio" name="selected_category" value={{cat}}>{{cat}}
+                                        <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                            <input id="selected_category" type="radio" name="selected_category" value={{cat}}>
+                                        </div>
+                                        <div class="col-12 col-lg-3 px-0 mx-0 py-2">
+                                            {{cat}}
                                         </div>
                                         {% endfor %}
                                     </div>
@@ -93,9 +98,14 @@
                                 <form action="" method="post">
                                     {% csrf_token %}
                                     <div class="row px-3">
-                                        <label> train: </label>
+                                        <div class="col-12 col-lg-1">
+                                            <label> train: </label>
+                                        </div>
+                                        <div class="col-12 col-lg-1">
+                                            <span id="sel_pct">{{ sel_val }}</span>
+                                        </div>
                                         <input id = "sel_val" type="range" name="sel_val" min="0" max="1.0" step="0.01" value={{ sel_val }} oninput="document.getElementById('sel_pct').innerHTML=this.value;">
-                                        <span id="sel_pct">{{ sel_val }}</span>
+                                        
                                         <button class="btn btn-primary">확인</button>
                                     </div>
                                 </form>
@@ -125,7 +135,7 @@
                                     <div class="card-header col-lg-8 mx-0">
                                         <h4>컬럼 리스트</h4>
                                     </div>
-                                    <div class="card-body col-lg-4 py-3">
+                                    <div class="card-body col-lg-4 py-3" style="text-align: right;">
                                         <button class="btn btn-primary">데이터프레임 생성</button>
                                     </div>
                                 </div>
@@ -133,8 +143,11 @@
                                     <div class="row mx-4">
                                         {% csrf_token %}
                                         {% for ind in index %}
-                                            <div class="col-12 col-lg-3">
-                                                <input id="selected_index" type="checkbox" name="selected_index" value={{ind}}>{{ind}}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_index" type="checkbox" name="selected_index" value={{ind}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{ind}}
                                             </div>
                                         {% endfor %}
                                     </div>
@@ -148,7 +161,7 @@
                                 <div class="card-header col-lg-10 mx-0 px-3">
                                     <h4>선택한 데이터프레임</h4>
                                 </div>
-                                <div class="card-body col-lg-2 py-3">
+                                <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                     {% if download_btn %}
                                         <a href="download/" download>
                                             <button class="btn btn-primary">{{download_btn}}</button>
@@ -176,16 +189,36 @@
     <script>
         {% comment %} 범주 분포 스크립트 {% endcomment %}
         var category_config = {
-          type: 'pie',
+          type: 'bar',
           data: {
+            labels: {{ selected_category_label|safe }},
             datasets: [{
               data: {{ selected_category_data|safe }},
-              backgroundColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)', 'rgb(153, 102, 255)']
+              backgroundColor: 'rgb(75, 192, 192)'
             }],
-            labels: {{ selected_category_label|safe }}
           },
           options: {
-            responsive: true
+            responsive: true,
+            scales: {
+                xAxes: [{
+                  display: false,
+                  barPercentage: 1.254,
+                  ticks: {
+                      max: 3,
+                  }
+               }, {
+                  display: true,
+                  ticks: {
+                      autoSkip: false,
+                      max: 4,
+                  }
+                }],
+                yAxes: [{
+                  ticks: {
+                    beginAtZero:true
+                  }
+                }]
+            }
           }
         };
         {% comment %} window.onload = function() {
@@ -215,6 +248,8 @@
         
     </script>
     <!-- train 차트 그리기 끝 -->
+    
+
 </body>
 
 </html>

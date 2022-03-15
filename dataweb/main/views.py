@@ -59,6 +59,8 @@ def index(req):
 
         # 파일 저장
         filename = fs.save(filename, inputfile)
+        selected_category_name = None
+        selected_category_no = None
 
 
     if 'sel_val' in req.POST:
@@ -133,12 +135,22 @@ def index(req):
                 # 버튼으로 선택한 것들을 받아오기
                 selected_category_name = req.POST.get('selected_category')
                 selected_category_no = list(cat.keys())[nameCat.index(selected_category_name)]      # 이름으로 컬럼 번호 찾기
+                print(cat)
 
             # 버튼 선택한 기록이 있는 경우
             if selected_category_name != None and selected_category_no != None:
                 data['selected_category_name'] = selected_category_name
                 data['selected_category_label'] = list(cat[selected_category_no].index)
                 data['selected_category_data'] = list(cat[selected_category_no].values)
+                data['selected_category_historgram_data'] = list(df[selected_category_name])
+                # print("======================")
+                # print(data['selected_category_name'])
+                # print("======================")
+                # print(data['selected_category_label'])
+                # print("======================")
+                # print(data['selected_category_data'])
+                # print("======================")
+                # print(data['selected_category_historgram_data'])
         except:
             return render(req, 'index.html', data)
 
@@ -217,3 +229,10 @@ def downloadTestFile(req):
     response['Content-Disposition'] = "attachment; filename=%s" % filename
 
     return response
+
+def am(req):
+    return render(req, 'amchart.html')
+
+
+def hc(req):
+    return render(req, 'highcharts.html')

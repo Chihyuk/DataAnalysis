@@ -4,5 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
-    path("download/", views.downloadFile, name="downloadFile")
+    path("download/", views.downloadFile, name="downloadFile"),
+    path("amchart", views.am),
+    path("highcharts", views.hc)
 ] 
