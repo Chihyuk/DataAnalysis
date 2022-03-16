@@ -23,6 +23,8 @@ global sel_val
 global inputfile
 global selected_category_name
 global selected_category_no
+global selected_index
+sel_val = 0.7
 
 # 초기화시켜줄 메소드
 def reset():
@@ -30,10 +32,12 @@ def reset():
     global inputfile
     global selected_category_name
     global selected_category_no
+    global selected_index
     sel_val = 0.7                       # 기본 초기값
     inputfile = None                    # 입력한 첨부파일
     selected_category_name = None       # 선택한 카테고리명
     selected_category_no = None         # 선택한 카테고리 번호
+    selected_index = None               # 선택한 컬럼
 
 def index(req):
     # 시간 측정
@@ -44,6 +48,7 @@ def index(req):
     global inputfile
     global selected_category_name
     global selected_category_no
+    global selected_index
 
     # 리턴할 값 모음
     data = {}  
@@ -114,7 +119,7 @@ def index(req):
             # dataframe 모든 row와 i번째 해당하는 column의 value_count(중복된 값이 몇개 있는지 파악)
             vc = df.iloc[:,i].value_counts()
             # distinct 값이 1개 초과 10개 이하일 경우 & 오름차순 했을 떄 첫 번째 리스트 값이 1이상인 경우 저장
-            if vc.count() > 1 and vc.count() <= 10 and vc.sort_values().values[0] > 1:           
+            if vc.count() > 1 and vc.sort_values().values[0] > 1:           
                 cat[i] = vc
 
         # 범주 이름으로 보여주기 위해 이름만 list로 저장
@@ -171,17 +176,20 @@ def index(req):
         if 'selected_index' in req.POST:          
             # 버튼으로 선택한 것들을 받아오기
             selected_index = req.POST.getlist('selected_index')
+
+        # 선택된 컬럼이 있었거나 있는 경우
+        if selected_index != None:
             # 받아온 인자들로만 데이터프레임 만들기
             selectMatch_index = df[selected_index]
-            # 데이터프레임을 html로 전달
-            data['selectMatch_index'] = selectMatch_index
+            # 선택한 컬럼은 html로 전달
+            data['selectMatch_index'] = selected_index
 
             # ip 주소 .을 _로 바꾸기
             d_ip = str(ip).replace('.', '_')
             # 행 번호는 없이 바꾼 이름으로 csv 파일 저장 
             selectMatch_index.to_csv(f'make/{d_ip}.csv', index = False)
             # 데이터프레임 다운 버튼 활성화
-            data['download_btn'] = "다운로드"
+            data['download_btn'] = "데이터프레임 다운로드"
         else:
             # 컬럼이 선택되지 않은 경우
             data['selectMatch_index'] = None

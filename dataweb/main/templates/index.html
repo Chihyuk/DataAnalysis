@@ -92,7 +92,7 @@
                         <!-- tarin % 비율 정하기-->
                         <div class="card select_box">
                             <div class="card-header">
-                                <h4>Select Train Set Percent</h4>
+                                <h4>훈련 세트 비율 설정</h4>
                             </div>
                             <div class="card-body">
                                 <form action="" method="post">
@@ -115,7 +115,7 @@
                         <!-- train test 파이차트 표현 -->
                         <div class="card">
                             <div class="card-header">
-                                <h4>Train, Test Set</h4>
+                                <h4>훈련, 테스트 비율</h4>
                             </div>
                             <div class="card-body">
                                 <canvas id="train-pie-chart"></canvas>
@@ -156,12 +156,12 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
-                        <div class="card">
+                        <div class="card select_box"  style="overflow:auto;">
                             <div class="card-header row mx-0">
-                                <div class="card-header col-lg-10 mx-0 px-3">
-                                    <h4>선택한 데이터프레임</h4>
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>선택한 컬럼</h4>
                                 </div>
-                                <div class="card-body col-lg-2 py-3" style="text-align: right;">
+                                <div class="card-body col-lg-4 py-3" style="text-align: right;">
                                     {% if download_btn %}
                                         <a href="download/" download>
                                             <button class="btn btn-primary">{{download_btn}}</button>
@@ -169,8 +169,12 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="card-body">
-                                {{selectMatch_index}}
+                            <div class="card-body pb-4 mx-4 row">
+                                {% for sel_ind in selectMatch_index %}
+                                    <div class="col-12 col-lg-4 py-2">
+                                        {{sel_ind}}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -199,6 +203,9 @@
           },
           options: {
             responsive: true,
+            legend: {
+                display: false
+            }, 
             scales: {
                 xAxes: [{
                   display: false,
