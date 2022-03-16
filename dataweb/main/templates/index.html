@@ -19,9 +19,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://www.amcharts.com/lib/4/core.js"></script>
-    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-    
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
+
 </head>
 
 <body>
@@ -190,21 +191,26 @@
     <script src="{% static 'assets/js/pages/dashboard.js' %}"></script>
 
     <script src="{% static 'assets/js/main.js' %}"></script>
+    <!--범주 분포 스크립트 -->
     <script>
-        {% comment %} 범주 분포 스크립트 {% endcomment %}
-        var category_config = {
-          type: 'bar',
-          data: {
+        Chart.defaults.global.defaultFontColor = 'black';
+        var chartData = {
             labels: {{ selected_category_label|safe }},
-            datasets: [{
-              data: {{ selected_category_data|safe }},
-              backgroundColor: 'rgb(75, 192, 192)'
-            }],
-          },
-          options: {
+            datasets: [
+                {
+                    backgroundColor: 'rgb(75, 192, 192)',
+                    data: {{ selected_category_data|safe }}
+                }
+            ]
+            };
+        
+        var cartOpt = {
             responsive: true,
             legend: {
-                display: false
+                display: true,
+                labels: {
+                    fontColor: '#FFF'
+                }
             }, 
             scales: {
                 xAxes: [{
@@ -225,18 +231,45 @@
                     beginAtZero:true
                   }
                 }]
+            },
+            events: false,
+            tooltips: {
+                enabled: false
+            },
+            hover: {
+                animationDuration: 0
+            },
+            animation: {
+                duration: 1,
+                onComplete: function () {
+                    var chartInstance = this.chart,
+                        ctx = chartInstance.ctx;
+                        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillStyle = 'black';
+        
+                    this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                        });
+                    });
+                }
             }
-          }
         };
-        {% comment %} window.onload = function() {
-            var category_ctx = document.getElementById('category-pie-chart').getContext('2d');
-            window.categoryPie = new Chart(category_ctx, category_config);
-        }; {% endcomment %}
-        var category_ctx = document.getElementById('category-pie-chart').getContext('2d');
-        var categoryPie = new Chart(category_ctx, category_config);
+        var ctx = document.getElementById("category-pie-chart"),
+            myLineChart = new Chart(ctx, {
+               type: 'bar',
+               data: chartData,
+               options: cartOpt
+            });
+        
     </script>
+
+    <!-- train 차트 그리기 -->
     <script>
-        {% comment %} train 차트 그리기 {% endcomment %}
         var train_config = {
             type: 'pie',
             data: {
@@ -250,6 +283,10 @@
                 responsive: true,
             }
         };
+        {% comment %} window.onload = function() {
+            var category_ctx = document.getElementById('category-pie-chart').getContext('2d');
+            window.categoryPie = new Chart(category_ctx, category_config);
+        }; {% endcomment %}
         var train_ctx = document.getElementById('train-pie-chart').getContext('2d');
         var trainPie = new Chart(train_ctx, train_config);
         
