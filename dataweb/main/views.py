@@ -30,6 +30,7 @@ global inputfile
 global selected_category_name
 global selected_category_no
 global selected_index
+global make_set
 sel_val = 0.7
 
 # 초기화시켜줄 메소드
@@ -39,11 +40,13 @@ def reset():
     global selected_category_name
     global selected_category_no
     global selected_index
+    global make_set
     sel_val = 0.7                       # 기본 초기값
     inputfile = None                    # 입력한 첨부파일
     selected_category_name = None       # 선택한 카테고리명
     selected_category_no = None         # 선택한 카테고리 번호
     selected_index = None               # 선택한 컬럼
+    make_set = None
 
 def index(req):
     # 시간 측정
@@ -55,6 +58,7 @@ def index(req):
     global selected_category_name
     global selected_category_no
     global selected_index
+    global make_set
 
     # 리턴할 값 모음
     data = {}  
@@ -112,17 +116,39 @@ def index(req):
     try:
         # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
         x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, 1-sel_val)
+    except:
+        print("train test set 생성 중 error 발생")
 
-        # 행 번호는 없이 바꾼 이름으로 train, test csv 파일 저장 
-        x_train.to_csv(f'make/{under_ip}_train_data.csv', index = False)
-        y_train.to_csv(f'make/{under_ip}_train_target.csv', index = False)
-        x_valid.to_csv(f'make/{under_ip}_test_data.csv', index = False)
-        y_valid.to_csv(f'make/{under_ip}_test_target.csv', index = False)
+    # csv 파일로 저장하지 않을 경우
+    try:
+        # html에 csv 생성 안했다고 알리기
+        data['no_select_train_data'] = 1
 
-        data['train_data'] = "train data"
-        data['train_target'] = "train target"
-        data['test_data'] = "test data"
-        data['test_target'] = "test target"
+        # 만약 버튼을 눌러 csv를 생성할 경우
+        if 'make_set' in req.POST:
+            # make_set에 값 받기
+            make_set = req.POST['make_set']
+            print('make_set', make_set, type(make_set))
+        else:
+            make_set = None
+    except:
+        print("csv 저장 안한 경우 에러 발생")
+
+    # csv 파일로 저장할 경우
+    try:
+        if make_set == "1":
+            # html에 csv 생성 했다고 알리기
+            data['no_select_train_data'] = None
+            # 행 번호는 없이 바꾼 이름으로 train, test csv 파일 저장 
+            x_train.to_csv(f'make/{under_ip}_train_data.csv', index = False)
+            y_train.to_csv(f'make/{under_ip}_train_target.csv', index = False)
+            x_valid.to_csv(f'make/{under_ip}_test_data.csv', index = False)
+            y_valid.to_csv(f'make/{under_ip}_test_target.csv', index = False)
+
+            data['train_data'] = "train data"
+            data['train_target'] = "train target"
+            data['test_data'] = "test data"
+            data['test_target'] = "test target"
     except:
         data['train_data'] = None
         data['train_target'] = None
