@@ -62,6 +62,8 @@ def index(req):
     # ip 가져오기
     ip = get_client_ip(req)
     data['ip'] = ip
+    # ip 주소 .을 _로 바꾸기
+    under_ip = str(ip).replace('.', '_')
 
     # input data
     try:
@@ -109,29 +111,43 @@ def index(req):
     # train set, test set 나눈 뒤 파이차트 생성
     try:
         # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
-        x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, sel_val)
-        # chart.js로 파이차트 그리기
+        x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, 1-sel_val)
+
+        # 행 번호는 없이 바꾼 이름으로 train, test csv 파일 저장 
+        x_train.to_csv(f'make/{under_ip}_train_data.csv', index = False)
+        y_train.to_csv(f'make/{under_ip}_train_target.csv', index = False)
+        x_valid.to_csv(f'make/{under_ip}_test_data.csv', index = False)
+        y_valid.to_csv(f'make/{under_ip}_test_target.csv', index = False)
+
+        data['train_data'] = "train data"
+        data['train_target'] = "train target"
+        data['test_data'] = "test data"
+        data['test_target'] = "test target"
+    except:
+        data['train_data'] = None
+        data['train_target'] = None
+        data['test_data'] = None
+        data['test_target'] = None
+        print("train test set 생성 중 error 발생")
+
+    try:
+        # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
         data['selected_train_label'] = list(people['set'].value_counts().index)
         data['selected_train_data'] = list(people['set'].value_counts().values)
 
+        # 그래프가 저장될 리스트
         train_graphs = []
                 
-        # Adding linear plot of y1 vs. x.
+        # Pie 그래프 생성
         train_graphs.append(
             go.Pie(labels=data['selected_train_label'], values=data['selected_train_data'])
         )
+        train_pie = plot({'data': train_graphs,}, output_type='div')
 
-        # Setting layout of the figure.
-        layout = {
-        }
-
-        # Getting HTML needed to render the plot.
-        train_pie = plot({'data': train_graphs, 'layout': layout}, 
-                        output_type='div')
-
+        # html에 파이그래프 전달
         data['train_pie'] = train_pie
     except:
-        print("train test set 생성 중 error 발생")
+        print("train test set 파이그래프 생성 중 error 발생")
 
     # 범주 생성
     try:    
@@ -179,25 +195,22 @@ def index(req):
             # 버튼 선택한 기록이 있는 경우
             if selected_category_name != None and selected_category_no != None:
                 data['selected_category_name'] = selected_category_name
-                # data['selected_category_label'] = list(cat[selected_category_no].index)
-                # data['selected_category_data'] = list(cat[selected_category_no].values)
 
-                # List of graph objects for figure.
-                # Each object will contain on series of data.
+                # 범주분포가 저장될 리스트
                 category_graphs = []
                 
-                # Adding linear plot of y1 vs. x.
+                # Histogram 생성
                 category_graphs.append(
                     go.Histogram(x=df[selected_category_name], texttemplate="%{x} : %{y}",)
                 )
 
-                # Setting layout of the figure.
+                # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
                 layout = {
                     'xaxis_title': 'values',
                     'yaxis_title': 'counts',
                 }
 
-                # Getting HTML needed to render the plot.
+                # HTML에 전달하기 위한 메소드
                 category_hist = plot({'data': category_graphs, 'layout': layout}, 
                                 output_type='div')
 
@@ -211,7 +224,7 @@ def index(req):
         except:
             selected_category_name = None
             selected_category_no = None
-            print("선택한 버튼 데이터를 html로 옮기는 중 error 발생")
+            print("선택한 범주 버튼 데이터를 html로 옮기는 중 error 발생")
 
     # 선택된 컬럼으로 데이터프레임 생성 및 저장
     try:
@@ -227,10 +240,8 @@ def index(req):
             # 선택한 컬럼은 html로 전달
             data['selectMatch_index'] = selected_index
 
-            # ip 주소 .을 _로 바꾸기
-            d_ip = str(ip).replace('.', '_')
             # 행 번호는 없이 바꾼 이름으로 csv 파일 저장 
-            selectMatch_index.to_csv(f'make/{d_ip}.csv', index = False)
+            selectMatch_index.to_csv(f'make/{under_ip}.csv', index = False)
             # 데이터프레임 다운 버튼 활성화
             data['download_btn'] = "데이터프레임 다운로드"
         else:
@@ -270,9 +281,9 @@ def makeTrainTest(df, pct):
 # 다운로드 버튼 누를경우 작동되는 메소드
 def downloadFile(req):
     ip = get_client_ip(req)
-    d_ip = str(ip).replace('.', '_')
+    under_ip = str(ip).replace('.', '_')
 
-    filename = f'{d_ip}.csv'
+    filename = f'{under_ip}.csv'
     filepath = "make/" + filename
     # Open the file for reading content
     path = open(filepath, 'r')
@@ -285,11 +296,12 @@ def downloadFile(req):
 
     return response
 
-def downloadTrainFile(req):
+# train data 저장 버튼
+def downloadTrainDataFile(req):
     ip = get_client_ip(req)
-    d_ip = str(ip).replace('.', '_')
+    under_ip = str(ip).replace('.', '_')
 
-    filename = f'{d_ip}test.csv'
+    filename = f'{under_ip}_train_data.csv'
     filepath = "make/" + filename
     # Open the file for reading content
     path = open(filepath, 'r')
@@ -302,11 +314,48 @@ def downloadTrainFile(req):
 
     return response
 
-def downloadTestFile(req):
+# train target 저장 버튼
+def downloadTrainTargetFile(req):
     ip = get_client_ip(req)
-    d_ip = str(ip).replace('.', '_')
+    under_ip = str(ip).replace('.', '_')
 
-    filename = f'{d_ip}train.csv'
+    filename = f'{under_ip}_train_target.csv'
+    filepath = "make/" + filename
+    # Open the file for reading content
+    path = open(filepath, 'r')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+    return response
+
+# train data 저장 버튼
+def downloadTestDataFile(req):
+    ip = get_client_ip(req)
+    under_ip = str(ip).replace('.', '_')
+
+    filename = f'{under_ip}_test_data.csv'
+    filepath = "make/" + filename
+    # Open the file for reading content
+    path = open(filepath, 'r')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+    return response
+
+# train target 저장 버튼
+def downloadTestTargetFile(req):
+    ip = get_client_ip(req)
+    under_ip = str(ip).replace('.', '_')
+
+    filename = f'{under_ip}_test_target.csv'
     filepath = "make/" + filename
     # Open the file for reading content
     path = open(filepath, 'r')

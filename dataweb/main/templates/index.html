@@ -17,29 +17,17 @@
     <link rel="stylesheet" href="{% static 'assets/css/app.css' %}">
     <link rel="shortcut icon" href="{% static 'assets/images/favicon.svg" type="image/x-icon' %}">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.min.js"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
-
 </head>
 
 <body>
     <div id="app">
         <div id="main">
-            <header class="mb-3">
-                <a href="#" class="burger-btn d-block d-xl-none">
-                    <i class="bi bi-justify fs-3"></i>
-                </a>
-            </header>
-
             <div class="page-heading">
                 <div class="row">
-                    <div class="col-12 col-lg-9">
+                    <div class="col-12 col-md-4">
                         <h3>Data Analysis</h3>
                     </div>
-                    <div class="col-12 col-lg-3 px-0">
+                    <div class="col-12 col-md-8 px-0", style="text-align: right;">
                         <!-- 파일 upload 받기 -->
                         <form action="" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -81,12 +69,12 @@
                         </div>
                         <!-- 범주 리스트 선택 -->
                         <div class="card">
-                            <div class="card-header">
-                                <h4><b>{{selected_category_name}}</b> 항목의 범주 분포</h4>
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-4 mx-0 px-3">
+                                    <h4><b>{{selected_category_name}}</b> 항목의 범주 분포</h4>
+                                </div>
                             </div>
                             <div class="card-body">
-                                {% comment %} <canvas id="category-pie-chart"></canvas> {% endcomment %}
-                                {% comment %} {{selected_category_historgram}} {% endcomment %}
                                 {% autoescape off %}
                                     {{ category_hist }}
                                 {% endautoescape %}
@@ -119,8 +107,38 @@
                         <!-- train % 비율 정하기 끝-->
                         <!-- train test 파이차트 표현 -->
                         <div class="card">
-                            <div class="card-header">
-                                <h4>훈련, 테스트 비율</h4>
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-4 mx-0 px-3">
+                                    <h4>훈련, 테스트 비율</h4>
+                                </div>
+                                <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
+                                    {% if train_data %}
+                                        <a href="train_data_download/" download>
+                                            <button class="btn btn-primary">{{train_data}}</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
+                                    {% if train_target %}
+                                        <a href="train_target_download/" download>
+                                            <button class="btn btn-primary">{{train_target}}</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
+                                    {% if test_data %}
+                                        <a href="test_data_download/" download>
+                                            <button class="btn btn-primary">{{test_data}}</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
+                                    {% if test_target %}
+                                        <a href="test_target_download/" download>
+                                            <button class="btn btn-primary">{{test_target}}</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="card-body">
                                 {% autoescape off %}
@@ -198,109 +216,6 @@
     <script src="{% static 'assets/js/pages/dashboard.js' %}"></script>
 
     <script src="{% static 'assets/js/main.js' %}"></script>
-    <!--범주 분포 스크립트 -->
-    <script>
-        Chart.defaults.global.defaultFontColor = 'black';
-        var chartData = {
-            labels: {{ selected_category_label|safe }},
-            datasets: [
-                {
-                    backgroundColor: 'rgb(75, 192, 192)',
-                    data: {{ selected_category_data|safe }}
-                }
-            ]
-            };
-        
-        var cartOpt = {
-            responsive: true,
-            legend: {
-                display: true,
-                labels: {
-                    fontColor: '#FFF'
-                }
-            }, 
-            scales: {
-                xAxes: [{
-                  display: false,
-                  barPercentage: 1.254,
-                  ticks: {
-                      max: 3,
-                  }
-               }, {
-                  display: true,
-                  ticks: {
-                      autoSkip: false,
-                      max: 4,
-                  }
-                }],
-                yAxes: [{
-                  ticks: {
-                    beginAtZero:true
-                  }
-                }]
-            },
-            events: false,
-            tooltips: {
-                enabled: true
-            },
-            hover: {
-                animationDuration: 100
-            },
-            animation: {
-                duration: 1,
-                onComplete: function () {
-                    var chartInstance = this.chart,
-                        ctx = chartInstance.ctx;
-                        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'bottom';
-                        ctx.fillStyle = 'black';
-        
-                    this.data.datasets.forEach(function (dataset, i) {
-                        var meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                            var data = dataset.data[index];
-                            ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                        });
-                    });
-                }
-            }
-        };
-        var ctx = document.getElementById("category-pie-chart"),
-            myLineChart = new Chart(ctx, {
-               type: 'bar',
-               data: chartData,
-               options: cartOpt
-            });
-        
-    </script>
-
-    <!-- train 차트 그리기 -->
-    <script>
-        var train_config = {
-            type: 'pie',
-            data: {
-                datasets: [{
-                data: {{ selected_train_data|safe }},
-                backgroundColor: ['rgb(67, 94, 190)', 'rgb(85, 198, 232)']
-            }],
-            labels: {{ selected_train_label|safe }}
-            },
-            options: {
-                responsive: true,
-            }
-        };
-        {% comment %} window.onload = function() {
-            var category_ctx = document.getElementById('category-pie-chart').getContext('2d');
-            window.categoryPie = new Chart(category_ctx, category_config);
-        }; {% endcomment %}
-        var train_ctx = document.getElementById('train-pie-chart').getContext('2d');
-        var trainPie = new Chart(train_ctx, train_config);
-        
-    </script>
-    <!-- train 차트 그리기 끝 -->
-    
-
 </body>
 
 </html>
