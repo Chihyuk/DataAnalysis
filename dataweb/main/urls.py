@@ -5,6 +5,5 @@ from . import views
 urlpatterns = [
     path('', views.index),
     path("download/", views.downloadFile, name="downloadFile"),
-    path("amchart", views.am),
-    path("highcharts", views.hc)
+    path("plot/", views.demo_plot_view)
 ] 

@@ -1,3 +1,4 @@
+from cProfile import label
 import mimetypes
 import os
 import time
@@ -14,6 +15,11 @@ import datetime
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
 from sklearn.model_selection import train_test_split
+
+from django.shortcuts import render
+from plotly.offline import plot
+import plotly.express as px
+import plotly.graph_objects as go
 
 # Include the `fusioncharts.py` file which has required functions to embed the charts in html page
 # from .fusioncharts import FusionCharts
@@ -107,6 +113,23 @@ def index(req):
         # chart.js로 파이차트 그리기
         data['selected_train_label'] = list(people['set'].value_counts().index)
         data['selected_train_data'] = list(people['set'].value_counts().values)
+
+        train_graphs = []
+                
+        # Adding linear plot of y1 vs. x.
+        train_graphs.append(
+            go.Pie(labels=data['selected_train_label'], values=data['selected_train_data'])
+        )
+
+        # Setting layout of the figure.
+        layout = {
+        }
+
+        # Getting HTML needed to render the plot.
+        train_pie = plot({'data': train_graphs, 'layout': layout}, 
+                        output_type='div')
+
+        data['train_pie'] = train_pie
     except:
         print("train test set 생성 중 error 발생")
 
@@ -156,9 +179,29 @@ def index(req):
             # 버튼 선택한 기록이 있는 경우
             if selected_category_name != None and selected_category_no != None:
                 data['selected_category_name'] = selected_category_name
-                data['selected_category_label'] = list(cat[selected_category_no].index)
-                data['selected_category_data'] = list(cat[selected_category_no].values)
-                data['selected_category_historgram_data'] = list(df[selected_category_name])
+                # data['selected_category_label'] = list(cat[selected_category_no].index)
+                # data['selected_category_data'] = list(cat[selected_category_no].values)
+
+                # List of graph objects for figure.
+                # Each object will contain on series of data.
+                category_graphs = []
+                
+                # Adding linear plot of y1 vs. x.
+                category_graphs.append(
+                    go.Histogram(x=df[selected_category_name], texttemplate="%{x} : %{y}",)
+                )
+
+                # Setting layout of the figure.
+                layout = {
+                    'xaxis_title': 'values',
+                    'yaxis_title': 'counts',
+                }
+
+                # Getting HTML needed to render the plot.
+                category_hist = plot({'data': category_graphs, 'layout': layout}, 
+                                output_type='div')
+
+                data['category_hist'] = category_hist
             else:
                 # 기록이 없는 경우 None 전달
                 data['selected_category_name'] = None
@@ -276,9 +319,24 @@ def downloadTestFile(req):
 
     return response
 
-def am(req):
-    return render(req, 'amchart.html')
+def demo_plot_view(request):
+    train_graphs = []
+    label = ['Test', 'Train']
+    value = [111011, 47576]
+    # Adding linear plot of y1 vs. x.
+    train_graphs.append(
+        go.Pie(labels=label, values=value)
+    )
 
 
-def hc(req):
-    return render(req, 'highcharts.html')
+    # Setting layout of the figure.
+    layout = {
+    }
+
+    # Getting HTML needed to render the plot.
+    train_pie = plot({'data': train_graphs, 'layout': layout}, 
+                    output_type='div')
+
+
+    return render(request, 'demo-plot.html', 
+                  context={'plot_div': train_pie})

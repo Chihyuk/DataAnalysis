@@ -85,7 +85,11 @@
                                 <h4><b>{{selected_category_name}}</b> 항목의 범주 분포</h4>
                             </div>
                             <div class="card-body">
-                                <canvas id="category-pie-chart"></canvas>
+                                {% comment %} <canvas id="category-pie-chart"></canvas> {% endcomment %}
+                                {% comment %} {{selected_category_historgram}} {% endcomment %}
+                                {% autoescape off %}
+                                    {{ category_hist }}
+                                {% endautoescape %}
                             </div>
                         </div>
                     </div>
@@ -119,7 +123,9 @@
                                 <h4>훈련, 테스트 비율</h4>
                             </div>
                             <div class="card-body">
-                                <canvas id="train-pie-chart"></canvas>
+                                {% autoescape off %}
+                                    {{ train_pie }}
+                                {% endautoescape %}
                             </div>
                         </div>
                         <!-- train test 파이차트 표현 끝 -->
@@ -182,6 +188,7 @@
                 </section>
             </div>
             <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 끝-->
+            
         </div>
     </div>
     <script src="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
