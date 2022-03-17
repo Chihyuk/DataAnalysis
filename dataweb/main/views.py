@@ -195,6 +195,7 @@ def index(req):
             data['selectMatch_index'] = None
             data['download_btn'] = None
     except:
+        selected_index = None
         print("데이터프레임을 만드는 중 error 발생")
 
     print("time : ", time.time() - start)
