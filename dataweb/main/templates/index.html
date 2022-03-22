@@ -46,7 +46,7 @@
                             <form action="" method="post">
                                 <div class="row px-3 py-2 mx-2">
                                     <div class="card-header col-lg-10">
-                                        <h4>범주 리스트</h4>
+                                        <h4>변수 리스트</h4>
                                     </div>
                                     <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                         <button class="btn btn-primary">선택</button>
@@ -111,45 +111,6 @@
                                 <div class="card-header col-lg-4 mx-0 px-3">
                                     <h4>훈련, 테스트 비율</h4>
                                 </div>
-                                {% if no_select_train_data != None %}
-                                    <form action="" method="post">
-                                        <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
-                                            {% csrf_token %}
-                                            <input type="hidden" id="make_set" name="make_set" value="1">
-                                            <button class="btn btn-primary">확인</button>
-                                        </div>
-                                    </form>
-                                {% endif %}
-                                {% if no_select_train_data == None %}
-                                    <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
-                                        {% if train_data %}
-                                            <a href="train_data_download/" download>
-                                                <button class="btn btn-primary">{{train_data}}</button>
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                    <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
-                                        {% if train_target %}
-                                            <a href="train_target_download/" download>
-                                                <button class="btn btn-primary">{{train_target}}</button>
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                    <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
-                                        {% if test_data %}
-                                            <a href="test_data_download/" download>
-                                                <button class="btn btn-primary">{{test_data}}</button>
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                    <div class="card-body col-lg-2 py-3 px-0" style="text-align: right;">
-                                        {% if test_target %}
-                                            <a href="test_target_download/" download>
-                                                <button class="btn btn-primary">{{test_target}}</button>
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
                             </div>
                             <div class="card-body">
                                 {% autoescape off %}
