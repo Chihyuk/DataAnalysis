@@ -21,6 +21,8 @@ from plotly.offline import plot
 import plotly.express as px
 import plotly.graph_objects as go
 
+from .sql import sql
+
 # Include the `fusioncharts.py` file which has required functions to embed the charts in html page
 # from .fusioncharts import FusionCharts
 
@@ -88,6 +90,9 @@ def index(req):
 
             # 이전에 입력한 항목 초기화
             reset()
+
+            df2 = pd.read_csv(filename)
+            sql.connectDB(under_ip, df2)
 
         # csv 첨부파일 경로 지정
         path = f"temp/{ip}.csv"
@@ -415,3 +420,4 @@ def demo_plot_view(request):
 
     return render(request, 'demo-plot.html', 
                   context={'plot_div': train_pie})
+
