@@ -71,13 +71,47 @@
                         <div class="card">
                             <div class="card-header row mx-0">
                                 <div class="card-header col-lg-12 mx-0 px-3">
-                                    <h4><b>{{selected_category_name}}</b> 항목의 범주 분포</h4>
+                                    <h4><b>{{selected_category_name}}</b> 히스토그램</h4>
                                 </div>
                             </div>
                             <div class="card-body">
                                 {% autoescape off %}
                                     {{ category_hist }}
                                 {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-12 mx-0 px-3">
+                                    <h4><b>{{selected_category_name}}</b> 정보</h4>
+                                </div>
+                            </div>
+                            <div class="card-body row">
+                                <div class="col-sm-2">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selVariableNull}}</h5>
+                                </div>
+                                <div class="col-lg-2">
+                                    <h5>Unique</h5>
+                                </div>
+                                <div class="col-lg-10">
+                                    <div class="row">
+                                        {% for dl in selVariableDistinctList %}
+                                            <div class="col-lg-3">
+                                                <h6>{{dl}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,7 +143,7 @@
                         <div class="card">
                             <div class="card-header row mx-0">
                                 <div class="card-header col-lg-4 mx-0 px-3">
-                                    <h4>훈련, 테스트 비율</h4>
+                                    <h4><b>{{selected_category_name}}</b> 꺾은선 그래프</h4>
                                 </div>
                             </div>
                             <div class="card-body">

@@ -97,11 +97,11 @@ def index(req):
 
 
         # csv 첨부파일 경로 지정
-        path = f"temp/{ip}.csv"
+        # path = f"temp/{ip}.csv"
         # path = "temp/58.238.38.231.csv"
 
         # 지정한 경로에 있는 csv 파일을 읽어오기
-        df = pd.read_csv(path)
+        # df = pd.read_csv(path)
     except:
         # input data가 없으면 초기화하고 내용 없이 return
         reset()
@@ -120,107 +120,145 @@ def index(req):
         print("train set 설정 중 error 발생")
 
     # train set, test set 나눈 뒤 파이차트 생성
-    try:
-        # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
-        x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, 1-sel_val)
-    except:
-        print("train test set 생성 중 error 발생")
+    # try:
+    #     # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
+    #     x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, 1-sel_val)
+    # except:
+    #     print("train test set 생성 중 error 발생")
 
-    try:
-        # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
-        data['selected_train_label'] = list(people['set'].value_counts().index)
-        data['selected_train_data'] = list(people['set'].value_counts().values)
+    # try:
+    #     # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
+    #     data['selected_train_label'] = list(people['set'].value_counts().index)
+    #     data['selected_train_data'] = list(people['set'].value_counts().values)
 
-        # 그래프가 저장될 리스트
-        train_graphs = []
+    #     # 그래프가 저장될 리스트
+    #     train_graphs = []
                 
-        # Pie 그래프 생성
-        train_graphs.append(
-            go.Pie(labels=data['selected_train_label'], values=data['selected_train_data'])
-        )
-        train_pie = plot({'data': train_graphs,}, output_type='div')
+    #     # Pie 그래프 생성
+    #     train_graphs.append(
+    #         go.Pie(labels=data['selected_train_label'], values=data['selected_train_data'])
+    #     )
+    #     train_pie = plot({'data': train_graphs,}, output_type='div')
 
-        # html에 파이그래프 전달
-        data['train_pie'] = train_pie
-    except:
-        print("train test set 파이그래프 생성 중 error 발생")
+    #     # html에 파이그래프 전달
+    #     data['train_pie'] = train_pie
+    # except:
+    #     print("train test set 파이그래프 생성 중 error 발생")
 
     # 범주 생성
-    try:    
-        # 범주를 담을 딕셔너리
-        cat = {}
-        # dataframe column 만큼 for문 돌리기
-        for i in range(len(df.columns)):
-            # dataframe 모든 row와 i번째 해당하는 column의 value_count(중복된 값이 몇개 있는지 파악)
-            vc = df.iloc[:,i].value_counts()
-            # distinct 값이 1개 초과 10개 이하일 경우 & 오름차순 했을 떄 첫 번째 리스트 값이 1이상인 경우 저장
-            if vc.count() > 1 and vc.sort_values().values[0] > 1:           
-                cat[i] = vc
+    # try:    
+    #     # 범주를 담을 딕셔너리
+    #     cat = {}
+    #     # dataframe column 만큼 for문 돌리기
+    #     for i in range(len(df.columns)):
+    #         # dataframe 모든 row와 i번째 해당하는 column의 value_count(중복된 값이 몇개 있는지 파악)
+    #         vc = df.iloc[:,i].value_counts()
+    #         # distinct 값이 1개 초과 10개 이하일 경우 & 오름차순 했을 떄 첫 번째 리스트 값이 1이상인 경우 저장
+    #         if vc.count() > 1 and vc.sort_values().values[0] > 1:           
+    #             cat[i] = vc
 
-        # 범주 이름으로 보여주기 위해 이름만 list로 저장
-        nameCat = []                                                        
-        for c in cat:
-            nameCat.append(cat[c].name)                     
+    #     # 범주 이름으로 보여주기 위해 이름만 list로 저장
+    #     nameCat = []                                                        
+    #     for c in cat:
+    #         nameCat.append(cat[c].name)                     
 
-        # 범주에 해당되는 값의 범주 이름을 리스트형으로 전달
-        data['category'] = nameCat        
+    #     # 범주에 해당되는 값의 범주 이름을 리스트형으로 전달
+    #     # data['category'] = nameCat        
+    # except:
+    #     print("범주 생성 중 error 발생")             
+
+    ####################################################################
+    # DB에서 변수 추출
+    try:
+        variable = SqlQuery.selectAllColumn(under_ip)
+        variableList = [v[0] for v in variable]
+        data['category'] = variableList
     except:
-        print("범주 생성 중 error 발생")                                  
+        print("변수 추출 중 error 발생")
 
     # 컬럼명 추출
     try:
-        # 컬럼명만 추출
-        index = df.columns.tolist()
         # 컬럼 리스트 생성
-        data['index'] = index
+        data['index'] = variableList
     except:
         print("컬럼명 추출 중 error 발생")
 
-    # 범주 선택 시 histogram 생성
+    # 변수 히스토그램 생성
     try:
-        # selected_category의 이름을 가진 버튼이 선택된 경우 (범주)
+        # selected_category의 이름을 가진 버튼이 선택된 경우
         if 'selected_category' in req.POST:          
             # 버튼으로 선택한 것들을 받아오기
             selected_category_name = req.POST.get('selected_category')
-            # 이름으로 컬럼 번호 찾기
-            selected_category_no = list(cat.keys())[nameCat.index(selected_category_name)]      
-    except:
-        print("선택한 범주 데이터를 가져오는 중 error 발생")
-    else:
-        try:
-            # 버튼 선택한 기록이 있는 경우
-            if selected_category_name != None and selected_category_no != None:
-                data['selected_category_name'] = selected_category_name
-
-                # 범주분포가 저장될 리스트
-                category_graphs = []
-                
-                # Histogram 생성
-                category_graphs.append(
-                    go.Histogram(x=df[selected_category_name], texttemplate="%{x} : %{y}",)
-                )
-
-                # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
-                layout = {
-                    'xaxis_title': 'values',
-                    'yaxis_title': 'counts',
-                }
-
-                # HTML에 전달하기 위한 메소드
-                category_hist = plot({'data': category_graphs, 'layout': layout}, 
-                                output_type='div')
-
-                data['category_hist'] = category_hist
-            else:
-                # 기록이 없는 경우 None 전달
-                data['selected_category_name'] = None
-                data['selected_category_label'] = None
-                data['selected_category_data'] = None
-                data['selected_category_historgram_data'] = None
-        except:
+            data['selected_category_name'] = selected_category_name
+        else:
             selected_category_name = None
-            selected_category_no = None
-            print("선택한 범주 버튼 데이터를 html로 옮기는 중 error 발생")
+    except:
+        print("변수 이름 가져오는 중 error 발생")
+        
+    try:
+        if selected_category_name != None:
+
+            selCol = SqlQuery.selectColumn(under_ip, selected_category_name)
+            dfCol = pd.DataFrame(selCol)
+
+            # 범주분포가 저장될 리스트
+            category_graphs = []
+            
+            # Histogram 생성
+            category_graphs.append(
+                go.Histogram(x=dfCol[0], texttemplate="%{x} : %{y}",)
+            )
+
+            # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
+            layout = {
+                'xaxis_title': 'values',
+                'yaxis_title': 'counts',
+            }
+
+            # HTML에 전달하기 위한 메소드
+            category_hist = plot({'data': category_graphs, 'layout': layout}, 
+                            output_type='div')
+
+            data['category_hist'] = category_hist
+        
+    except:
+        print("히스토그램 생성 중 error 발생")
+
+    # 변수 정보 출력
+    try:
+        # 데이터 타입 출력
+        selVariable = SqlQuery.selectColumnType(under_ip, selected_category_name)
+        selVariableType = selVariable[1].decode()
+        # null 값 갯수 출력
+        selVariableNull = SqlQuery.selectColumnNull(under_ip, selected_category_name)[0]
+        # unique 값 갯수 출력
+        selVariableDistinct = SqlQuery.selectColumnDistinct(under_ip, selected_category_name)
+        selVariableDistinctList = [dis[0] for dis in selVariableDistinct]
+        data['selVariableType'] = selVariableType
+        data['selVariableNull'] = selVariableNull
+        data['selVariableDistinctList'] = selVariableDistinctList
+
+    except:
+        print("변수 정보 출력 중 error 발생")
+
+    # 꺾은 선 그래프 출력
+    try:
+        selVC = SqlQuery.selectColumnValueCounts(under_ip, selected_category_name)
+        dfVC = pd.DataFrame(selVC)
+        # 그래프가 저장될 리스트
+        column_graphs = []
+                
+        # Line 그래프 생성
+        column_graphs.append(
+            go.Scatter(x=dfVC[0], y=dfVC[1], mode='lines', name=selected_category_name)
+        )
+        column_line = plot({'data': column_graphs,}, output_type='div')
+
+        # html에 파이그래프 전달
+        data['train_pie'] = column_line
+    except:
+        print("꺾은 선 그래프 출력 중 error 발생")
+    ####################################################################
 
     # 선택된 컬럼으로 데이터프레임 생성 및 저장
     try:
@@ -228,6 +266,7 @@ def index(req):
         if 'selected_index' in req.POST:          
             # 버튼으로 선택한 것들을 받아오기
             selected_index = req.POST.getlist('selected_index')
+            print(selected_index)
 
         # 선택된 컬럼이 있었거나 있는 경우
         if selected_index != None:
