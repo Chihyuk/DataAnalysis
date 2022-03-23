@@ -88,13 +88,8 @@ def index(req):
             # 파일 저장
             filename = fs.save(filename, inputfile)
 
-            # DB에 저장
-            df_savedb = pd.read_csv(filename)
-            SqlQuery.insertDB(under_ip, df_savedb)
-
             # 이전에 입력한 항목 초기화
             reset()
-
 
         # csv 첨부파일 경로 지정
         path = f"temp/{ip}.csv"
