@@ -9,6 +9,11 @@
     height: 300px;
 }
 
+.info_box{
+    max-height: 350px;
+    overflow:auto;
+}
+
 .cat_radio_btn{
     text-align: right;
 }

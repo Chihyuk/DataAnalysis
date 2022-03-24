@@ -106,6 +106,8 @@ def index(req):
         reset()
         return render(req, 'index.html', data)
 
+    print("첨부파일 가져오기 : ", time.time() - start)
+
     # 선택한 변수의 Null값을 0으로
     try:
         vnz = None
@@ -121,6 +123,8 @@ def index(req):
             df = pd.read_csv(path)
     except:
         print("변수 null 값 0 만드는 중 실패")
+    
+    print("변수 null 시간 : ", time.time() - start)
 
     # 전체 데이터프레임의 Null값을 0으로
     try:
@@ -137,6 +141,8 @@ def index(req):
             df = pd.read_csv(path)
     except:
         print("전체 null 값 0 만드는 중 실패")
+
+    print("데이터프레임 전체 null 시간 : ", time.time() - start)
 
     # train percent 적용
     try:
@@ -157,6 +163,8 @@ def index(req):
     except:
         print("train test set 생성 중 error 발생")
 
+    print("sklearn 사용 시간 : ", time.time() - start)
+
     # 파이그래프 생성
     try:
         # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
@@ -176,6 +184,8 @@ def index(req):
         data['train_pie'] = train_pie
     except:
         print("train test set 파이그래프 생성 중 error 발생")
+
+    print("파이그래프 생성 시간 : ", time.time() - start)
 
     # 범주 생성
     try:    
@@ -202,6 +212,8 @@ def index(req):
         data['category_add'] = objectDF    
     except:
         print("범주 생성 중 error 발생")                                  
+
+    print("범주 생성 시간 : ", time.time() - start)
 
     # 컬럼명 추출
     try:
@@ -245,6 +257,7 @@ def index(req):
     except:
         print("선택한 추가 변수 데이터를 가져오는 중 error 발생")
 
+    print("모든 변수 얻는 시간 : ", time.time() - start)
 
     # 선택한 변수 Data Type / Empty Cells / Unique Value 
     try:
@@ -303,6 +316,8 @@ def index(req):
         selected_add_category = None
         print("선택한 추가 변수 정보 출력 중 error 발생")
 
+    print("데이터 타입, 널, 유니크 : ", time.time() - start)
+
     # 변수 선택 시 꺾은선그래프 생성
     try:
         if selected_one_category != None:
@@ -321,6 +336,8 @@ def index(req):
 
     except:
         print("선택한 변수 꺾은선 그래프 생성 중 error 발생")
+
+    print("변수 꺾은선 그래프 생성 시간 : ", time.time() - start)
 
     # 범주 선택 시 histogram 생성
     try:
@@ -355,8 +372,9 @@ def index(req):
     except:
         selected_category_name = None
         selected_category_no = None
-        print("선택한 범주 버튼 데이터를 html로 옮기는 중 error 발생")
+        print("범주 히스토그램 생성 중 error 발생")
 
+    print("히스토그램 생성 시간 : ", time.time() - start)
 
     # 막대그래프, 꺾은선그래프 변수 저장
     try:
@@ -378,6 +396,8 @@ def index(req):
     except:
         print("막대 그래프, 꺽은선 그래프 리스트 담는 중 error 발생")
 
+    print("막대, 꺾은선 리스트 담는 시간 : ", time.time() - start)
+
     # 꺾은선 그래프 생성
     try:
         # HTML에 전달하기 위한 메소드
@@ -386,6 +406,8 @@ def index(req):
         data['multi_category_line'] = multi_category_line
     except:
         print("꺾은선 그래프 생성 중 error 발생")
+
+    print("꺾은선 그래프 생성 시간 : ", time.time() - start)
 
     # 막대 그래프 생성
     try:
@@ -399,6 +421,8 @@ def index(req):
         data['multi_category_bar'] = multi_category_bar
     except:
         print("막대 그래프 생성 중 error 발생")
+
+    print("막대그래프 생성 시간 : ", time.time() - start)
 
     # 선택된 컬럼으로 데이터프레임 생성 및 저장
     try:
@@ -426,7 +450,7 @@ def index(req):
         selected_index = None
         print("데이터프레임을 만드는 중 error 발생")
 
-    print("time : ", time.time() - start)
+    print("endtime : ", time.time() - start)
     return render(req, 'index.html', data)
 
 # 사용자 ip 얻어오기
@@ -448,8 +472,7 @@ def makeTrainTest(df, pct):
     people1 = pd.DataFrame({'people':y_train.index, 'set':'Train'})
     people2 = pd.DataFrame({'people':y_valid.index, 'set':'Test'})
     people = pd.concat([people1, people2])
-
-    print("time2-0-4 : ", time.time() - start)                          
+                 
     return x_train, x_valid, y_train, y_valid, people
 
 # 다운로드 버튼 누를경우 작동되는 메소드
