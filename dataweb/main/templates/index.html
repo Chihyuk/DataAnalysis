@@ -40,6 +40,87 @@
             </div>
             <div class="page-content">
                 <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <!-- 전체 변수 리스트 선택  -->
+                        <form action="" method="post">
+                            <div class="card select_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-10">
+                                        <h4>변수 리스트</h4>
+                                    </div>
+                                    <div class="card-body col-lg-2 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for ind in index %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_one_category" type="radio" name="selected_one_category" value={{ind}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{ind}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-12 mx-0 px-3">
+                                    <h4><b>{{selected_one_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입이다</h6>
+                                </div>
+                            </div>
+                            <div class="card-body row">
+                                <div class="col-sm-2">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selOneVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selOneVariableNull}}</h5>
+                                </div>
+                                <div class="col-lg-2">
+                                    <h5>Unique</h5>
+                                </div>
+                                <div class="col-lg-10">
+                                    <div class="row">
+                                        {% for do in selOneVariableDistinctList %}
+                                            <div class="col-lg-3">
+                                                <h6>{{do}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 라인그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_one_category_name}} 라인그래프</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ one_category_line }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 라인그래프 표현 끝 -->
+                    </div>
+                </section>
+                <section class="row">
                     <div class="row">
                         <div class="col-12 col-lg-6">
                             <!-- 범주 리스트 선택 -->
@@ -48,6 +129,9 @@
                                     <div class="row px-3 py-2 mx-2">
                                         <div class="card-header col-lg-10">
                                             <h4>예상 범주 리스트</h4>
+                                            <h6>범주 설정 조건</h6>
+                                            <h7>1. 문자열이 포함된 경우</h7><br>
+                                            <h7>2. unique 2개 이상 5개 이하이고 각각의 unique가 2개 이상의 값을 가질 경우</h7>
                                         </div>
                                         <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                             <button class="btn btn-primary">선택</button>
@@ -104,6 +188,7 @@
                             <div class="card-header row mx-0">
                                 <div class="card-header col-lg-12 mx-0 px-3">
                                     <h4><b>{{selected_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입이다</h6>
                                 </div>
                             </div>
                             <div class="card-body row">
@@ -153,6 +238,7 @@
                             <div class="card-header row mx-0">
                                 <div class="card-header col-lg-12 mx-0 px-3">
                                     <h4><b>{{selected_add_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입이다</h6>
                                 </div>
                             </div>
                             <div class="card-body row">
@@ -182,25 +268,11 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- 멀티 막대그래프 표현 -->
-                        <div class="card">
-                            <div class="card-header row mx-0">
-                                <div class="card-header col-lg-8 mx-0 px-3">
-                                    <h4>{{selected_add_category_name}}가 주는 영향 - 막대그래프</h4>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                {% autoescape off %}
-                                    {{ multi_category_bar }}
-                                {% endautoescape %}
-                            </div>
-                        </div>
-                        <!-- 멀티 막대그래프 표현 끝 -->
                         <!-- 멀티 라인그래프 표현 -->
                         <div class="card">
                             <div class="card-header row mx-0">
                                 <div class="card-header col-lg-8 mx-0 px-3">
-                                    <h4>{{selected_add_category_name}}가 주는 영향 - 라인그래프</h4>
+                                    <h4>{{selected_add_category_name}}와(과) 관계 - 라인그래프</h4>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -210,6 +282,21 @@
                             </div>
                         </div>
                         <!-- 멀티 라인그래프 표현 끝 -->
+                        <!-- 멀티 막대그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_add_category_name}}와(과) 관계 - 막대그래프</h4>
+                                    <h6>선택한 예상 범주의 값에 따라 출력이 안될 수 있음</h6>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ multi_category_bar }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 멀티 막대그래프 표현 끝 -->
                     </div>
                 </section>
             </div>

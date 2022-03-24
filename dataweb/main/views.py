@@ -21,7 +21,7 @@ from plotly.offline import plot
 import plotly.express as px
 import plotly.graph_objects as go
 
-from .SqlQuery import SqlQuery
+# from .SqlQuery import SqlQuery
 
 # Include the `fusioncharts.py` file which has required functions to embed the charts in html page
 # from .fusioncharts import FusionCharts
@@ -33,6 +33,7 @@ global selected_category_name
 global selected_category_no
 global selected_index
 global selected_add_category
+global selected_one_category
 sel_val = 0.7
 
 # 초기화시켜줄 메소드
@@ -43,12 +44,14 @@ def reset():
     global selected_category_no
     global selected_index
     global selected_add_category
+    global selected_one_category
     sel_val = 0.7                       # 기본 초기값
     inputfile = None                    # 입력한 첨부파일
     selected_category_name = None       # 선택한 카테고리명
     selected_category_no = None         # 선택한 카테고리 번호
     selected_index = None               # 선택한 컬럼
     selected_add_category = None        # 예상 범주와 함께 보여줄 변수
+    selected_one_category = None        # 선택한 컬럼 정보 및 꺾은선 그래프로 보여주기 위한 변수
 
 def index(req):
     # 시간 측정
@@ -61,6 +64,7 @@ def index(req):
     global selected_category_no
     global selected_index
     global selected_add_category
+    global selected_one_category
 
     # 리턴할 값 모음
     data = {}  
@@ -167,9 +171,18 @@ def index(req):
         # 컬럼명만 추출
         index = df.columns.tolist()
         # 컬럼 리스트 생성
-        data['index'] = index
+        data['index'] = index           # 선택한 예상 범주에 영향을 확인할 다른 변수
     except:
         print("컬럼명 추출 중 error 발생")
+
+    # 선택한 컬럼 변수로 저장
+    try:
+        if 'selected_one_category' in req.POST:
+            selected_one_category = req.POST.get('selected_one_category')
+        if selected_one_category != None:
+            data['selected_one_category_name'] = selected_one_category
+    except:
+        print("선택한 변수 데이터를 가져오는 중 error 발생")
 
     # 선택한 범주 변수로 저장
     try:
@@ -193,8 +206,27 @@ def index(req):
         if selected_add_category != None:
             data['selected_add_category_name'] = selected_add_category 
     except:
-        print("선택한 범주 데이터를 가져오는 중 error 발생")
+        print("선택한 추가 변수 데이터를 가져오는 중 error 발생")
 
+
+    # 선택한 변수 Data Type / Empty Cells / Unique Value 
+    try:
+        # 버튼 선택한 기록이 있는 경우
+        if selected_one_category != None:
+            # 타입 확인
+            selOneVariableType = str(df[selected_one_category].dtype)
+            # null 개수 확인
+            selOneVariableNull = df[selected_one_category].isnull().sum()
+            # distinct
+            selOneVariableDistinctList = sorted(df[selected_one_category].unique())
+
+        data['selOneVariableType'] = selOneVariableType
+        data['selOneVariableNull'] = selOneVariableNull
+        data['selOneVariableDistinctList'] = selOneVariableDistinctList
+
+    except:
+        selected_one_category = None
+        print("선택한 변수 정보 출력 중 error 발생")
 
     # 선택한 범주 Data Type / Empty Cells / Unique Value 
     try:
@@ -234,6 +266,24 @@ def index(req):
         selected_add_category = None
         print("선택한 추가 변수 정보 출력 중 error 발생")
 
+    # 변수 선택 시 꺾은선그래프 생성
+    try:
+        if selected_one_category != None:
+            # 꺾은선 그래프가 저장될 리스트
+            one_category_line_graphs = []
+
+            sel_one_vc = df[selected_one_category].value_counts().sort_index()
+
+            one_category_line_graphs.append(
+                go.Scatter(x=sel_one_vc.index, y=sel_one_vc.values, )
+            )
+
+            # HTML에 전달하기 위한 메소드
+            one_category_line = plot({'data': one_category_line_graphs}, output_type='div')
+            data['one_category_line'] = one_category_line
+
+    except:
+        print("선택한 변수 꺾은선 그래프 생성 중 error 발생")
 
     # 범주 선택 시 histogram 생성
     try:
@@ -309,10 +359,6 @@ def index(req):
 
     # 추가 변수 합쳐 막대그래프로 표현
     try:
-        # selected_index의 이름을 가진 버튼이 선택된 경우 (컬럼)
-        if 'selected_add_category' in req.POST:          
-            # 버튼으로 선택한 것들을 받아오기
-            selected_add_category = req.POST.get('selected_add_category')
         # 선택된 컬럼이 있었거나 있는 경우
         if selected_add_category != None:
             # 막대그래프가 저장될 리스트
@@ -336,12 +382,8 @@ def index(req):
     except:
         print("막대 그래프 출력 중 error 발생")
 
-    # 선 그래프로 표현
+    # 추가 변수 합쳐 선 그래프로 표현
     try:
-        # selected_index의 이름을 가진 버튼이 선택된 경우 (컬럼)
-        if 'selected_add_category' in req.POST:          
-            # 버튼으로 선택한 것들을 받아오기
-            selected_add_category = req.POST.get('selected_add_category')
         # 선택된 컬럼이 있었거나 있는 경우
         if selected_add_category != None:
             # 꺾은선 그래프가 저장될 리스트
