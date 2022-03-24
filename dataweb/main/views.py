@@ -32,7 +32,7 @@ global inputfile
 global selected_category_name
 global selected_category_no
 global selected_index
-global make_set
+global selected_add_category
 sel_val = 0.7
 
 # 초기화시켜줄 메소드
@@ -42,13 +42,13 @@ def reset():
     global selected_category_name
     global selected_category_no
     global selected_index
-    global make_set
+    global selected_add_category
     sel_val = 0.7                       # 기본 초기값
     inputfile = None                    # 입력한 첨부파일
     selected_category_name = None       # 선택한 카테고리명
     selected_category_no = None         # 선택한 카테고리 번호
     selected_index = None               # 선택한 컬럼
-    make_set = None
+    selected_add_category = None        # 예상 범주와 함께 보여줄 변수
 
 def index(req):
     # 시간 측정
@@ -60,7 +60,7 @@ def index(req):
     global selected_category_name
     global selected_category_no
     global selected_index
-    global make_set
+    global selected_add_category
 
     # 리턴할 값 모음
     data = {}  
@@ -121,6 +121,7 @@ def index(req):
     except:
         print("train test set 생성 중 error 발생")
 
+    # 파이그래프 생성
     try:
         # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
         data['selected_train_label'] = list(people['set'].value_counts().index)
@@ -142,23 +143,22 @@ def index(req):
 
     # 범주 생성
     try:    
-        # 범주를 담을 딕셔너리
-        cat = {}
-        # dataframe column 만큼 for문 돌리기
-        for i in range(len(df.columns)):
-            # dataframe 모든 row와 i번째 해당하는 column의 value_count(중복된 값이 몇개 있는지 파악)
-            vc = df.iloc[:,i].value_counts()
-            # distinct 값이 1개 초과 10개 이하일 경우 & 오름차순 했을 떄 첫 번째 리스트 값이 1이상인 경우 저장
-            if vc.count() > 1 and vc.sort_values().values[0] > 1:           
-                cat[i] = vc
-
-        # 범주 이름으로 보여주기 위해 이름만 list로 저장
-        nameCat = []                                                        
-        for c in cat:
-            nameCat.append(cat[c].name)                     
+        # 문자열일 경우 or
+        # 유일하지 않고, 값을 가지고 있는게 1 이상이고 값 종류는 5개 이하인 것
+        objectDF = []
+        dt = df.dtypes
+        for d in range(len(dt)):
+            if dt[d] == object:
+                objectDF.append(dt.index[d])
+            else:
+                vc = df.iloc[:,d].value_counts()
+                if vc.count() > 1 and vc.sort_values().values[0] > 1 and len(vc) <= 5:
+                    objectDF.append(dt.index[d])                 
 
         # 범주에 해당되는 값의 범주 이름을 리스트형으로 전달
-        data['category'] = nameCat        
+        data['category'] = objectDF    
+        # 추가 범주 생성
+        data['category_add'] = objectDF    
     except:
         print("범주 생성 중 error 발생")                                  
 
@@ -171,51 +171,192 @@ def index(req):
     except:
         print("컬럼명 추출 중 error 발생")
 
-    # 범주 선택 시 histogram 생성
+    # 선택한 범주 변수로 저장
     try:
         # selected_category의 이름을 가진 버튼이 선택된 경우 (범주)
         if 'selected_category' in req.POST:          
             # 버튼으로 선택한 것들을 받아오기
-            selected_category_name = req.POST.get('selected_category')
-            # 이름으로 컬럼 번호 찾기
-            selected_category_no = list(cat.keys())[nameCat.index(selected_category_name)]      
+            selected_category_name = req.POST.get('selected_category')  
+        # 버튼 선택한 기록이 있는 경우
+        if selected_category_name != None:
+            data['selected_category_name'] = selected_category_name 
     except:
         print("선택한 범주 데이터를 가져오는 중 error 발생")
-    else:
-        try:
-            # 버튼 선택한 기록이 있는 경우
-            if selected_category_name != None and selected_category_no != None:
-                data['selected_category_name'] = selected_category_name
 
-                # 범주분포가 저장될 리스트
-                category_graphs = []
-                
-                # Histogram 생성
-                category_graphs.append(
-                    go.Histogram(x=df[selected_category_name], texttemplate="%{x} : %{y}",)
+    # 선택한 추가 범주 변수로 저장
+    try:
+        # selected_index의 이름을 가진 버튼이 선택된 경우 (컬럼)
+        if 'selected_add_category' in req.POST:          
+            # 버튼으로 선택한 것들을 받아오기
+            selected_add_category = req.POST.get('selected_add_category')
+        # 선택된 추가 컬럼이 있었거나 있는 경우
+        if selected_add_category != None:
+            data['selected_add_category_name'] = selected_add_category 
+    except:
+        print("선택한 범주 데이터를 가져오는 중 error 발생")
+
+
+    # 선택한 범주 Data Type / Empty Cells / Unique Value 
+    try:
+        # 버튼 선택한 기록이 있는 경우
+        if selected_category_name != None:
+            # 타입 확인
+            selVariableType = str(df[selected_category_name].dtype)
+            # null 개수 확인
+            selVariableNull = df[selected_category_name].isnull().sum()
+            # distinct
+            selVariableDistinctList = sorted(df[selected_category_name].unique())
+
+        data['selVariableType'] = selVariableType
+        data['selVariableNull'] = selVariableNull
+        data['selVariableDistinctList'] = selVariableDistinctList
+
+    except:
+        selected_category_name = None
+        print("선택한 범주 정보 출력 중 error 발생")
+
+    # 선택한 추가 변수 Data Type / Empty Cells / Unique Value 
+    try:
+        # 선택된 추가 컬럼이 있었거나 있는 경우
+        if selected_add_category != None:
+            # 타입 확인
+            selAddVariableType = str(df[selected_add_category].dtype)
+            # null 개수 확인
+            selAddVariableNull = df[selected_add_category].isnull().sum()
+            # distinct
+            selAddVariableDistinctList = sorted(df[selected_add_category].unique())
+
+        data['selAddVariableType'] = selAddVariableType
+        data['selAddVariableNull'] = selAddVariableNull
+        data['selAddVariableDistinctList'] = selAddVariableDistinctList
+
+    except:
+        selected_add_category = None
+        print("선택한 추가 변수 정보 출력 중 error 발생")
+
+
+    # 범주 선택 시 histogram 생성
+    try:
+        if selected_category_name != None:
+            # 범주분포가 저장될 리스트
+            category_graphs = []
+            
+            # Histogram 생성
+            category_graphs.append(
+                go.Histogram(x=df[selected_category_name], texttemplate="%{x} : %{y}",)
+            )
+            
+
+            # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
+            layout = {
+                'xaxis_title': 'values',
+                'yaxis_title': 'counts',
+                # 'barmode': 'stack', 
+            }
+
+            # HTML에 전달하기 위한 메소드
+            category_hist = plot({'data': category_graphs, 'layout': layout}, 
+                            output_type='div')
+
+            data['category_hist'] = category_hist
+        else:
+            # 기록이 없는 경우 None 전달
+            data['selected_category_name'] = None
+            data['selected_category_label'] = None
+            data['selected_category_data'] = None
+            data['selected_category_historgram_data'] = None
+    except:
+        selected_category_name = None
+        selected_category_no = None
+        print("선택한 범주 버튼 데이터를 html로 옮기는 중 error 발생")
+
+
+    # 막대그래프, 꺾은선그래프로 표현
+    # try:
+    #     # 선택된 추가 컬럼이 있었거나 있는 경우
+    #     if selected_add_category != None:
+    #         # 막대그래프가 저장될 리스트
+    #         multi_category_bar_graphs = []
+    #         # 꺾은선 그래프가 저장될 리스트
+    #         multi_category_line_graphs = []
+
+    #         for svdl in selVariableDistinctList:
+    #             sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
+    #             multi_category_bar_graphs.append(
+    #                 go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=svdl+" : %{y}", name=svdl,)
+    #             )
+    #             multi_category_line_graphs.append(
+    #                 go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=svdl,)
+    #             )
+
+    #         # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
+    #         multi_category_bar_layout = {
+    #             'barmode': 'stack', 
+    #         }
+
+    #         # HTML에 전달하기 위한 메소드
+    #         multi_category_bar = plot({'data': multi_category_bar_graphs, 'layout': multi_category_bar_layout}, output_type='div')
+    #         multi_category_line = plot({'data': multi_category_line_graphs}, output_type='div')
+
+    #         data['multi_category_bar'] = multi_category_bar
+    #         data['multi_category_line'] = multi_category_line
+        
+    # except:
+    #     print("막대 그래프, 꺽은선 그래프 출력 중 error 발생")
+
+    # 추가 변수 Data Type / Empty Cells / Unique Value /
+
+
+    # 추가 변수 합쳐 막대그래프로 표현
+    try:
+        # selected_index의 이름을 가진 버튼이 선택된 경우 (컬럼)
+        if 'selected_add_category' in req.POST:          
+            # 버튼으로 선택한 것들을 받아오기
+            selected_add_category = req.POST.get('selected_add_category')
+        # 선택된 컬럼이 있었거나 있는 경우
+        if selected_add_category != None:
+            # 막대그래프가 저장될 리스트
+            multi_category_bar_graphs = []
+
+            for svdl in selVariableDistinctList:
+                sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
+                multi_category_bar_graphs.append(
+                    go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=svdl+" : %{y}", name=svdl,)
                 )
 
-                # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
-                layout = {
-                    'xaxis_title': 'values',
-                    'yaxis_title': 'counts',
-                }
+            # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
+            multi_category_bar_layout = {
+                'barmode': 'stack', 
+            }
 
-                # HTML에 전달하기 위한 메소드
-                category_hist = plot({'data': category_graphs, 'layout': layout}, 
-                                output_type='div')
+            # HTML에 전달하기 위한 메소드
+            multi_category_bar = plot({'data': multi_category_bar_graphs, 'layout': multi_category_bar_layout}, output_type='div')
+            data['multi_category_bar'] = multi_category_bar
+        
+    except:
+        print("막대 그래프 출력 중 error 발생")
 
-                data['category_hist'] = category_hist
-            else:
-                # 기록이 없는 경우 None 전달
-                data['selected_category_name'] = None
-                data['selected_category_label'] = None
-                data['selected_category_data'] = None
-                data['selected_category_historgram_data'] = None
-        except:
-            selected_category_name = None
-            selected_category_no = None
-            print("선택한 범주 버튼 데이터를 html로 옮기는 중 error 발생")
+    # 선 그래프로 표현
+    try:
+        # selected_index의 이름을 가진 버튼이 선택된 경우 (컬럼)
+        if 'selected_add_category' in req.POST:          
+            # 버튼으로 선택한 것들을 받아오기
+            selected_add_category = req.POST.get('selected_add_category')
+        # 선택된 컬럼이 있었거나 있는 경우
+        if selected_add_category != None:
+            # 꺾은선 그래프가 저장될 리스트
+            multi_category_line_graphs = []
+            for svdl in selVariableDistinctList:
+                sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
+                multi_category_line_graphs.append(
+                    go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=svdl,)
+                )
+            # HTML에 전달하기 위한 메소드
+            multi_category_line = plot({'data': multi_category_line_graphs}, output_type='div')
+            data['multi_category_line'] = multi_category_line
+        
+    except:
+        print("선 그래프 출력 중 error 발생")
 
     # 선택된 컬럼으로 데이터프레임 생성 및 저장
     try:
