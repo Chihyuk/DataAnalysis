@@ -120,20 +120,6 @@ def index(req):
     except:
         print("변수 null 값 0 만드는 중 실패")
 
-    # 선택한 범주의 Null값을 0으로
-    try:
-        if 'sel_cat_null_zero' in req.POST:
-            df[selected_category_name] = df[selected_category_name].fillna(0)
-            # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
-            if os.path.isfile(filename):
-                os.remove(filename)
-            # 0으로 만든 데이터프레임 저장
-            df.to_csv(filename)
-            # 데이터프레임을 새 데이터프레임으로 덮어씌우기
-            df = pd.read_csv(path)
-    except:
-        print("범주 null 값 0 만드는 중 실패")
-
     # 전체 데이터프레임의 Null값을 0으로
     try:
         if 'sel_null_zero' in req.POST:
