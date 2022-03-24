@@ -74,6 +74,11 @@ def index(req):
     data['ip'] = ip
     # ip 주소 .을 _로 바꾸기
     under_ip = str(ip).replace('.', '_')
+    # 파일명
+    filename = f"./temp/{ip}.csv"
+    # csv 첨부파일 경로 지정
+    path = f"temp/{ip}.csv"
+    # path = "temp/58.238.38.231.csv"
 
     # input data
     try:
@@ -83,21 +88,16 @@ def index(req):
 
             # temp폴더에 IP주소명으로 첨부파일 저장하기
             fs = FileSystemStorage()
-            filename = f"./temp/{ip}.csv"
 
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
                 os.remove(filename)
 
             # 파일 저장
-            filename = fs.save(filename, inputfile)
+            fs.save(filename, inputfile)
 
             # 이전에 입력한 항목 초기화
             reset()
-
-        # csv 첨부파일 경로 지정
-        path = f"temp/{ip}.csv"
-        # path = "temp/58.238.38.231.csv"
 
         # 지정한 경로에 있는 csv 파일을 읽어오기
         df = pd.read_csv(path)
@@ -105,6 +105,48 @@ def index(req):
         # input data가 없으면 초기화하고 내용 없이 return
         reset()
         return render(req, 'index.html', data)
+
+    # 선택한 변수의 Null값을 0으로
+    try:
+        if 'sel_var_null_zero' in req.POST:
+            df[selected_one_category] = df[selected_one_category].fillna(0)
+            # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
+            if os.path.isfile(filename):
+                os.remove(filename)
+            # 0으로 만든 데이터프레임 저장
+            df.to_csv(filename)
+            # 데이터프레임을 새 데이터프레임으로 덮어씌우기
+            df = pd.read_csv(path)
+    except:
+        print("변수 null 값 0 만드는 중 실패")
+
+    # 선택한 범주의 Null값을 0으로
+    try:
+        if 'sel_cat_null_zero' in req.POST:
+            df[selected_category_name] = df[selected_category_name].fillna(0)
+            # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
+            if os.path.isfile(filename):
+                os.remove(filename)
+            # 0으로 만든 데이터프레임 저장
+            df.to_csv(filename)
+            # 데이터프레임을 새 데이터프레임으로 덮어씌우기
+            df = pd.read_csv(path)
+    except:
+        print("범주 null 값 0 만드는 중 실패")
+
+    # 전체 데이터프레임의 Null값을 0으로
+    try:
+        if 'sel_null_zero' in req.POST:
+            df = df.fillna(0)
+            # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
+            if os.path.isfile(filename):
+                os.remove(filename)
+            # 0으로 만든 데이터프레임 저장
+            df.to_csv(filename)
+            # 데이터프레임을 새 데이터프레임으로 덮어씌우기
+            df = pd.read_csv(path)
+    except:
+        print("전체 null 값 0 만드는 중 실패")
 
     # train percent 적용
     try:
@@ -150,17 +192,22 @@ def index(req):
         # 문자열일 경우 or
         # 유일하지 않고, 값을 가지고 있는게 1 이상이고 값 종류는 5개 이하인 것
         objectDF = []
+        # objeect type이 아닌 것들을 담을 리스트
+        nonObjectDF = []
         dt = df.dtypes
         for d in range(len(dt)):
             if dt[d] == object:
                 objectDF.append(dt.index[d])
             else:
+                nonObjectDF.append(dt.index[d])
                 vc = df.iloc[:,d].value_counts()
                 if vc.count() > 1 and vc.sort_values().values[0] > 1 and len(vc) <= 5:
                     objectDF.append(dt.index[d])                 
 
         # 범주에 해당되는 값의 범주 이름을 리스트형으로 전달
-        data['category'] = objectDF    
+        data['category'] = objectDF   
+        # 문자열이 없는 리스트
+        data['nonObject'] = nonObjectDF
         # 추가 범주 생성
         data['category_add'] = objectDF    
     except:

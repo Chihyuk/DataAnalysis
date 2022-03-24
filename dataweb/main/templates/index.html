@@ -47,6 +47,7 @@
                                 <div class="row px-3 py-2 mx-2">
                                     <div class="card-header col-lg-10">
                                         <h4>변수 리스트</h4>
+                                        <h6>문자열이 포함된 컬럼은 제외<h6>
                                     </div>
                                     <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                         <button class="btn btn-primary">선택</button>
@@ -55,12 +56,12 @@
                                 <div class="card-content pb-4">
                                     <div class="row mx-4 py-2">
                                         {% csrf_token %}
-                                        {% for ind in index %}
+                                        {% for noj in nonObject %}
                                             <div class="col-12 col-lg-1 cat_radio_btn py-2">
-                                                <input id="selected_one_category" type="radio" name="selected_one_category" value={{ind}}>
+                                                <input id="selected_one_category" type="radio" name="selected_one_category" value={{noj}}>
                                             </div>
                                             <div class="col-12 col-lg-3 py-2">
-                                                {{ind}}
+                                                {{noj}}
                                             </div>
                                         {% endfor %}
                                     </div>
@@ -70,9 +71,15 @@
                         <!-- 변수 리스트 표 그리기 -->
                         <div class="card">
                             <div class="card-header row mx-0">
-                                <div class="card-header col-lg-12 mx-0 px-3">
+                                <div class="card-header col-lg-7 mx-0 px-3">
                                     <h4><b>{{selected_one_category_name}}</b> 정보</h4>
-                                    <h6>변수 타입 object는 문자열이 포함된 타입이다</h6>
+                                </div>
+                                <div class="col-lg-5 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_var_null_zero" name="sel_var_null_zero" value="sel_var_null_zero">
+                                        <button class="btn btn-primary">{{selected_one_category_name}}의 Null 값 0으로</button>
+                                    <form>
                                 </div>
                             </div>
                             <div class="card-body row">
@@ -186,9 +193,16 @@
                         <!-- 변수 리스트 표 그리기 -->
                         <div class="card">
                             <div class="card-header row mx-0">
-                                <div class="card-header col-lg-12 mx-0 px-3">
+                                <div class="card-header col-lg-7 mx-0 px-3">
                                     <h4><b>{{selected_category_name}}</b> 정보</h4>
                                     <h6>변수 타입 object는 문자열이 포함된 타입이다</h6>
+                                </div>
+                                <div class="col-lg-5 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_cat_null_zero" name="sel_cat_null_zero" value="sel_cat_null_zero">
+                                        <button class="btn btn-primary">{{selected_category_name}}의 Null 값 0으로</button>
+                                    <form>
                                 </div>
                             </div>
                             <div class="card-body row">
@@ -236,9 +250,16 @@
                         <!-- 변수 리스트 표 그리기 -->
                         <div class="card">
                             <div class="card-header row mx-0">
-                                <div class="card-header col-lg-12 mx-0 px-3">
+                                <div class="card-header col-lg-7 mx-0 px-3">
                                     <h4><b>{{selected_add_category_name}}</b> 정보</h4>
                                     <h6>변수 타입 object는 문자열이 포함된 타입이다</h6>
+                                </div>
+                                <div class="col-lg-5 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_null_zero" name="sel_null_zero" value="sel_null_zero">
+                                        <button class="btn btn-primary">전체 Null 값 0으로</button>
+                                    <form>
                                 </div>
                             </div>
                             <div class="card-body row">
