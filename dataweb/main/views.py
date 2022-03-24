@@ -108,7 +108,9 @@ def index(req):
 
     # 선택한 변수의 Null값을 0으로
     try:
-        if 'sel_var_null_zero' in req.POST:
+        vnz = None
+        vnz = req.POST.get('sel_var_null_zero')
+        if vnz == 'sel_var_null_zero':
             df[selected_one_category] = df[selected_one_category].fillna(0)
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
@@ -122,7 +124,9 @@ def index(req):
 
     # 전체 데이터프레임의 Null값을 0으로
     try:
-        if 'sel_null_zero' in req.POST:
+        nz = None
+        nz = req.POST.get('sel_null_zero')
+        if nz == 'sel_null_zero':
             df = df.fillna(0)
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
@@ -354,84 +358,47 @@ def index(req):
         print("선택한 범주 버튼 데이터를 html로 옮기는 중 error 발생")
 
 
-    # 막대그래프, 꺾은선그래프로 표현
-    # try:
-    #     # 선택된 추가 컬럼이 있었거나 있는 경우
-    #     if selected_add_category != None:
-    #         # 막대그래프가 저장될 리스트
-    #         multi_category_bar_graphs = []
-    #         # 꺾은선 그래프가 저장될 리스트
-    #         multi_category_line_graphs = []
-
-    #         for svdl in selVariableDistinctList:
-    #             sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
-    #             multi_category_bar_graphs.append(
-    #                 go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=svdl+" : %{y}", name=svdl,)
-    #             )
-    #             multi_category_line_graphs.append(
-    #                 go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=svdl,)
-    #             )
-
-    #         # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
-    #         multi_category_bar_layout = {
-    #             'barmode': 'stack', 
-    #         }
-
-    #         # HTML에 전달하기 위한 메소드
-    #         multi_category_bar = plot({'data': multi_category_bar_graphs, 'layout': multi_category_bar_layout}, output_type='div')
-    #         multi_category_line = plot({'data': multi_category_line_graphs}, output_type='div')
-
-    #         data['multi_category_bar'] = multi_category_bar
-    #         data['multi_category_line'] = multi_category_line
-        
-    # except:
-    #     print("막대 그래프, 꺽은선 그래프 출력 중 error 발생")
-
-    # 추가 변수 Data Type / Empty Cells / Unique Value /
-
-
-    # 추가 변수 합쳐 막대그래프로 표현
+    # 막대그래프, 꺾은선그래프 변수 저장
     try:
-        # 선택된 컬럼이 있었거나 있는 경우
+        # 선택된 추가 컬럼이 있었거나 있는 경우
         if selected_add_category != None:
+            # 꺾은선 그래프가 저장될 리스트
+            multi_category_line_graphs = []
             # 막대그래프가 저장될 리스트
             multi_category_bar_graphs = []
 
             for svdl in selVariableDistinctList:
                 sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
-                multi_category_bar_graphs.append(
-                    go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=svdl+" : %{y}", name=svdl,)
-                )
-
-            # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
-            multi_category_bar_layout = {
-                'barmode': 'stack', 
-            }
-
-            # HTML에 전달하기 위한 메소드
-            multi_category_bar = plot({'data': multi_category_bar_graphs, 'layout': multi_category_bar_layout}, output_type='div')
-            data['multi_category_bar'] = multi_category_bar
-        
-    except:
-        print("막대 그래프 출력 중 error 발생")
-
-    # 추가 변수 합쳐 선 그래프로 표현
-    try:
-        # 선택된 컬럼이 있었거나 있는 경우
-        if selected_add_category != None:
-            # 꺾은선 그래프가 저장될 리스트
-            multi_category_line_graphs = []
-            for svdl in selVariableDistinctList:
-                sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
                 multi_category_line_graphs.append(
                     go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=svdl,)
                 )
-            # HTML에 전달하기 위한 메소드
-            multi_category_line = plot({'data': multi_category_line_graphs}, output_type='div')
-            data['multi_category_line'] = multi_category_line
-        
+                multi_category_bar_graphs.append(
+                    go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=svdl+" : %{y}", name=svdl,)
+                )
     except:
-        print("선 그래프 출력 중 error 발생")
+        print("막대 그래프, 꺽은선 그래프 리스트 담는 중 error 발생")
+
+    # 꺾은선 그래프 생성
+    try:
+        # HTML에 전달하기 위한 메소드
+        multi_category_line = plot({'data': multi_category_line_graphs}, output_type='div')
+
+        data['multi_category_line'] = multi_category_line
+    except:
+        print("꺾은선 그래프 생성 중 error 발생")
+
+    # 막대 그래프 생성
+    try:
+        # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
+        multi_category_bar_layout = {
+            'barmode': 'stack', 
+        }
+        # HTML에 전달하기 위한 메소드
+        multi_category_bar = plot({'data': multi_category_bar_graphs, 'layout': multi_category_bar_layout}, output_type='div')
+
+        data['multi_category_bar'] = multi_category_bar
+    except:
+        print("막대 그래프 생성 중 error 발생")
 
     # 선택된 컬럼으로 데이터프레임 생성 및 저장
     try:
