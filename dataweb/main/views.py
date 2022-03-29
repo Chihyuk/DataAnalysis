@@ -232,7 +232,8 @@ def index(req):
             try:
                 no = nonObjectDF.iloc[:,ln]
                 # 75% 기준 이유 : M1_PPM_FREE_SCRB_CNT 컬럼이 unique value의 count 최댓값 37k 이면서 유의미한 값을 가진다고 판단
-                if (lenNO*0.75) > max(no.value_counts()):
+                # unique의 갯수가 1000개 이상인 경우 제외
+                if (lenNO*0.75) > max(no.value_counts()) and 1000 >= len(no.value_counts()):
                     nonObjectDFX75Name.append(no.name)
             except:
                 continue
@@ -303,11 +304,14 @@ def index(req):
             selOneVariableType = str(df[selected_one_category].dtype)
             # null 개수 확인
             selOneVariableNull = df[selected_one_category].isnull().sum()
-            # distinct
+            # unique 개수
+            selOneVariableDistinctCount = len(df[selected_one_category].unique())
+            # unique 리스트
             selOneVariableDistinctList = sorted(df[selected_one_category].unique())
 
         data['selOneVariableType'] = selOneVariableType
         data['selOneVariableNull'] = selOneVariableNull
+        data['selOneVariableDistinctCount'] = selOneVariableDistinctCount
         data['selOneVariableDistinctList'] = selOneVariableDistinctList
 
     except:
@@ -322,11 +326,14 @@ def index(req):
             selVariableType = str(df[selected_category_name].dtype)
             # null 개수 확인
             selVariableNull = df[selected_category_name].isnull().sum()
-            # distinct
+            # unique 개수
+            selVariableDistinctCount = len(df[selected_category_name].unique())
+            # unique 리스트
             selVariableDistinctList = sorted(df[selected_category_name].unique())
 
         data['selVariableType'] = selVariableType
         data['selVariableNull'] = selVariableNull
+        data['selVariableDistinctCount'] = selVariableDistinctCount
         data['selVariableDistinctList'] = selVariableDistinctList
 
     except:
@@ -341,11 +348,14 @@ def index(req):
             selAddVariableType = str(df[selected_add_category].dtype)
             # null 개수 확인
             selAddVariableNull = df[selected_add_category].isnull().sum()
-            # distinct
+            # unique 개수
+            selAddVariableDistinctCount = len(df[selected_add_category].unique())
+            # unique 리스트
             selAddVariableDistinctList = sorted(df[selected_add_category].unique())
 
         data['selAddVariableType'] = selAddVariableType
         data['selAddVariableNull'] = selAddVariableNull
+        data['selAddVariableDistinctCount'] = selAddVariableDistinctCount
         data['selAddVariableDistinctList'] = selAddVariableDistinctList
 
     except:
