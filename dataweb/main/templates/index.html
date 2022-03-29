@@ -24,10 +24,13 @@
         <div id="main">
             <div class="page-heading">
                 <div class="row">
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-2">
                         <h3>Data Analysis</h3>
                     </div>
-                    <div class="col-12 col-md-8 px-0", style="text-align: right;">
+                    <div class="col-12 col-md-7", style="text-align: right;">
+                        <h5>{{nodata}}</h5>
+                    </div>
+                    <div class="col-12 col-md-3 px-0", style="text-align: right;">
                         <!-- 파일 upload 받기 -->
                         <form action="" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
@@ -47,7 +50,9 @@
                                 <div class="row px-3 py-2 mx-2">
                                     <div class="card-header col-lg-10">
                                         <h4>변수 리스트</h4>
-                                        <h6>문자열이 포함된 컬럼은 제외<h6>
+                                        <h6>변수 설정 조건</h6>
+                                        <h7>1. 문자열이 포함된 컬럼은 제외<h7><br>
+                                        <h7>2. 각 unique value의 count 중 최댓값이 전체 행 갯수 75% 이하인 컬럼</h7>
                                     </div>
                                     <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                         <button class="btn btn-primary">선택</button>
@@ -166,7 +171,7 @@
                                 <div class="row px-3 py-2 mx-2">
                                     <div class="card-header col-lg-10">
                                         <h4>선택한 예상 범주에 영향을 확인할 다른 변수</h4>
-                                        <h6>전체 컬럼 표시</h6>
+                                        <h6>변수 리스트 + 예상 범주 리스트</h6>
                                     </div>
                                     <div class="card-body col-lg-2 py-3" style="text-align: right;">
                                         <button class="btn btn-primary">선택</button>
@@ -175,12 +180,12 @@
                                 <div class="card-content pb-4">
                                     <div class="row mx-4 py-2">
                                         {% csrf_token %}
-                                        {% for ind in index %}
+                                        {% for cd in category_add %}
                                             <div class="col-12 col-lg-1 cat_radio_btn py-2">
-                                                <input id="selected_add_category" type="radio" name="selected_add_category" value={{ind}}>
+                                                <input id="selected_add_category" type="radio" name="selected_add_category" value={{cd}}>
                                             </div>
                                             <div class="col-12 col-lg-3 py-2">
-                                                {{ind}}
+                                                {{cd}}
                                             </div>
                                         {% endfor %}
                                     </div>
@@ -301,7 +306,6 @@
                             <div class="card-header row mx-0">
                                 <div class="card-header col-lg-8 mx-0 px-3">
                                     <h4>{{selected_add_category_name}}와(과) 관계 - 막대그래프</h4>
-                                    <h6>선택한 예상 범주의 값에 따라 출력이 안될 수 있습니다</h6>
                                     <h6>범례가 표시된 경우 그래프를 확대하면 값을 확인할 수 있습니다</h6>
                                 </div>
                             </div>
