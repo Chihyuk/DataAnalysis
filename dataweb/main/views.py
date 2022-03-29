@@ -79,7 +79,7 @@ def index(req):
     # csv 첨부파일 경로 지정
     path = f"temp/{ip}.csv"
     # path = "temp/58.238.38.231.csv"
-
+    print("시작", filename, path )
     # input data
     try:
         # 첨부 파일 가져오기
@@ -103,6 +103,7 @@ def index(req):
         df = pd.read_csv(path)
     except:
         # input data가 없으면 초기화하고 내용 없이 return
+        print("error 발생")
         reset()
         return render(req, 'index.html', data)
 
@@ -111,14 +112,17 @@ def index(req):
     # 선택한 변수의 Null값을 0으로
     try:
         vnz = None
-        vnz = req.POST.get('sel_var_null_zero')
+        if 'sel_var_null_zero' in req.POST:
+            vnz = req.POST.get('sel_var_null_zero')
+        print("변수 null 있는지 확인 시간 :", time.time() - start)
         if vnz == 'sel_var_null_zero':
+            print("변수 null if문 들어간 시간 :", time.time() - start)
             df[selected_one_category] = df[selected_one_category].fillna(0)
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
                 os.remove(filename)
             # 0으로 만든 데이터프레임 저장
-            df.to_csv(filename)
+            df.to_csv(filename, index=None)
             # 데이터프레임을 새 데이터프레임으로 덮어씌우기
             df = pd.read_csv(path)
     except:
@@ -129,14 +133,15 @@ def index(req):
     # 전체 데이터프레임의 Null값을 0으로
     try:
         nz = None
-        nz = req.POST.get('sel_null_zero')
+        if 'sel_null_zero' in req.POST:
+            nz = req.POST.get('sel_null_zero')
         if nz == 'sel_null_zero':
             df = df.fillna(0)
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
                 os.remove(filename)
             # 0으로 만든 데이터프레임 저장
-            df.to_csv(filename)
+            df.to_csv(filename, index=None)
             # 데이터프레임을 새 데이터프레임으로 덮어씌우기
             df = pd.read_csv(path)
     except:
@@ -388,10 +393,10 @@ def index(req):
             for svdl in selVariableDistinctList:
                 sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
                 multi_category_line_graphs.append(
-                    go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=svdl,)
+                    go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=str(svdl),)
                 )
                 multi_category_bar_graphs.append(
-                    go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=svdl+" : %{y}", name=svdl,)
+                    go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=str(svdl)+" : %{y}", name=str(svdl),)
                 )
     except:
         print("막대 그래프, 꺽은선 그래프 리스트 담는 중 error 발생")
