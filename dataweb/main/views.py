@@ -313,7 +313,10 @@ def index(req):
             # unique 개수
             selOneVariableDistinctCount = len(df[selected_one_category].unique())
             # unique 리스트
-            selOneVariableDistinctList = sorted(df[selected_one_category].unique())
+            try:
+                selOneVariableDistinctList = sorted(df[selected_one_category].unique())
+            except:
+                selOneVariableDistinctList = list(df[selected_one_category].unique())
 
         data['selOneVariableType'] = selOneVariableType
         data['selOneVariableNull'] = selOneVariableNull
@@ -335,7 +338,10 @@ def index(req):
             # unique 개수
             selVariableDistinctCount = len(df[selected_category_name].unique())
             # unique 리스트
-            selVariableDistinctList = sorted(df[selected_category_name].unique())
+            try:
+                selVariableDistinctList = sorted(df[selected_category_name].unique())
+            except:
+                selVariableDistinctList = list(df[selected_category_name].unique())
 
         data['selVariableType'] = selVariableType
         data['selVariableNull'] = selVariableNull
@@ -357,7 +363,10 @@ def index(req):
             # unique 개수
             selAddVariableDistinctCount = len(df[selected_add_category].unique())
             # unique 리스트
-            selAddVariableDistinctList = sorted(df[selected_add_category].unique())
+            try:
+                selAddVariableDistinctList = sorted(df[selected_add_category].unique())
+            except:
+                selAddVariableDistinctList = list(df[selected_add_category].unique())
 
         data['selAddVariableType'] = selAddVariableType
         data['selAddVariableNull'] = selAddVariableNull
