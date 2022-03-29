@@ -104,6 +104,8 @@ def index(req):
         reset()
         return render(req, 'index.html', data)
 
+    print("첨부파일 가져오기 : ", time.time() - start)
+
     # 받은 csv파일로 데이터프레임 만들기
     try:
         # 지정한 경로에 있는 csv 파일을 읽어오기
@@ -114,7 +116,7 @@ def index(req):
         reset()
         return render(req, 'index.html', data)
 
-    print("첨부파일 가져오기 : ", time.time() - start)
+    print("저장된 파일 불러오기 : ", time.time() - start)
 
     # 선택한 변수의 Null값을 0으로
     try:
@@ -219,7 +221,9 @@ def index(req):
         # 범주에 해당되는 값의 범주 이름을 리스트형으로 전달
         data['category'] = objectName    
     except:
-        print("범주 생성 중 error 발생")           
+        print("범주 생성 중 error 발생")       
+
+    print("범주 생성 시간 : ", time.time() - start)    
 
     # 변수 생성
     try:
@@ -243,6 +247,8 @@ def index(req):
     except:
         print("변수 생성 중 error 발생")
 
+    print("변수 생성 시간 : ", time.time() - start)
+
     # 추가 변수 생성
     try:
         addValidation = list(set(objectName + nonObjectDFX75Name))
@@ -250,7 +256,7 @@ def index(req):
     except:
         print("추가 변수 생성 중 error 발생")
 
-    print("범주 생성 시간 : ", time.time() - start)
+    print("추가 변수 생성 시간 : ", time.time() - start)
 
     # 컬럼명 추출
     try:
@@ -431,13 +437,20 @@ def index(req):
             # 막대그래프가 저장될 리스트
             multi_category_bar_graphs = []
 
+            # 그래프가 원활하게 표시되기 위해 unique 리스트를 0의 값을 가진 시리즈로 만든 뒤 추가 선택한 항목과 더하여 그래프 생성
+            add_sel_all_index = df[selected_add_category].value_counts().sort_index().index
+            add_sel_all = pd.Series(0, index=add_sel_all_index)
+
             for svdl in selVariableDistinctList:
+                # 데이터프레임에서 선택한 범주의 추가 변수 값만 가져와 unique를 sort 시킴
                 sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
+                # 미리 만들어둔 모든 unique Series 와 더한 뒤 null 값은 0으로 채우기
+                add_sel_all_values = (add_sel_all + sel_mul_vc).fillna(0)
                 multi_category_line_graphs.append(
-                    go.Scatter(x=sel_mul_vc.index, y=sel_mul_vc.values, name=str(svdl),)
+                    go.Scatter(x=add_sel_all_index, y=add_sel_all_values, name=str(svdl),)
                 )
                 multi_category_bar_graphs.append(
-                    go.Bar(x=sel_mul_vc.index, y=sel_mul_vc.values, texttemplate=str(svdl)+" : %{y}", name=str(svdl),)
+                    go.Bar(x=add_sel_all_index, y=add_sel_all_values, texttemplate=str(svdl)+" : %{y}", name=str(svdl),)
                 )
     except:
         print("막대 그래프, 꺽은선 그래프 리스트 담는 중 error 발생")
