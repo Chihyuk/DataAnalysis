@@ -80,7 +80,20 @@ def index(req):
     path = f"temp/{ip}.csv"
     # path = "temp/58.238.38.231.csv"
 
-        # 사용자로부터 첨부파일 받아오기 
+    data['nodata'] = "파일을 선택해주세요   ---->"
+
+    # 초기화 버튼
+    try:
+        if 'clearAll' in req.POST:
+            reset()
+            # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
+            if os.path.isfile(filename):
+                os.remove(filename)
+            return render(req, 'index.html', data)
+    except:
+        print("초기화 실패")
+
+    # 사용자로부터 첨부파일 받아오기 
     try:
         # 첨부 파일 가져오기
         if 'inputfile' in req.FILES:
@@ -110,9 +123,9 @@ def index(req):
     try:
         # 지정한 경로에 있는 csv 파일을 읽어오기
         df = pd.read_csv(path)
+        data['nodata'] = ""
     except:
         print("데이터 프레임 만드는 중 error 발생")
-        data['nodata'] = "파일을 선택해주세요   ---->"
         reset()
         return render(req, 'index.html', data)
 
@@ -158,48 +171,49 @@ def index(req):
 
     print("데이터프레임 전체 null 시간 : ", time.time() - start)
 
-    # train percent 적용
-    try:
-        # 선택한 train set 퍼센트 가져오기
-        if 'sel_val' in req.POST:
-            sel_val = req.POST.get('sel_val')
-            sel_val = float(sel_val)
 
-        # 선택한 train set 퍼센트 유지
-        data['sel_val'] = sel_val
-    except:
-        print("train set 설정 중 error 발생")
+    # # train percent 적용
+    # try:
+    #     # 선택한 train set 퍼센트 가져오기
+    #     if 'sel_val' in req.POST:
+    #         sel_val = req.POST.get('sel_val')
+    #         sel_val = float(sel_val)
 
-    # train set, test set 나눈 뒤 파이차트 생성
-    try:
-        # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
-        x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, 1-sel_val)
-    except:
-        print("train test set 생성 중 error 발생")
+    #     # 선택한 train set 퍼센트 유지
+    #     data['sel_val'] = sel_val
+    # except:
+    #     print("train set 설정 중 error 발생")
 
-    print("sklearn 사용 시간 : ", time.time() - start)
+    # # train set, test set 나눈 뒤 파이차트 생성
+    # try:
+    #     # 입력받은 퍼센트로 입력받은 csv 파일을 train, test set과 그래프로 표현할 데이터로 나누기
+    #     x_train, x_valid, y_train, y_valid, people = makeTrainTest(df, 1-sel_val)
+    # except:
+    #     print("train test set 생성 중 error 발생")
 
-    # 파이그래프 생성
-    try:
-        # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
-        data['selected_train_label'] = list(people['set'].value_counts().index)
-        data['selected_train_data'] = list(people['set'].value_counts().values)
+    # print("sklearn 사용 시간 : ", time.time() - start)
 
-        # 그래프가 저장될 리스트
-        train_graphs = []
+    # # 파이그래프 생성
+    # try:
+    #     # 해댱 변수를 html에서 사용하진 않지만 plotly로 Pie 그래프 만들 때 사용
+    #     data['selected_train_label'] = list(people['set'].value_counts().index)
+    #     data['selected_train_data'] = list(people['set'].value_counts().values)
+
+    #     # 그래프가 저장될 리스트
+    #     train_graphs = []
                 
-        # Pie 그래프 생성
-        train_graphs.append(
-            go.Pie(labels=data['selected_train_label'], values=data['selected_train_data'])
-        )
-        train_pie = plot({'data': train_graphs,}, output_type='div')
+    #     # Pie 그래프 생성
+    #     train_graphs.append(
+    #         go.Pie(labels=data['selected_train_label'], values=data['selected_train_data'])
+    #     )
+    #     train_pie = plot({'data': train_graphs,}, output_type='div')
 
-        # html에 파이그래프 전달
-        data['train_pie'] = train_pie
-    except:
-        print("train test set 파이그래프 생성 중 error 발생")
+    #     # html에 파이그래프 전달
+    #     data['train_pie'] = train_pie
+    # except:
+    #     print("train test set 파이그래프 생성 중 error 발생")
 
-    print("파이그래프 생성 시간 : ", time.time() - start)
+    # print("파이그래프 생성 시간 : ", time.time() - start)
 
     # 범주 생성
     try:    
@@ -231,19 +245,19 @@ def index(req):
         lenNO = len(nonObjectDF)
 
         # 조건 : 문자열이 없는 리스트 + unique value의 count 중 최댓값이 전체 row의 75% 이하인 column
-        nonObjectDFX75Name = []
-        for ln in range(lenNO):
-            try:
-                no = nonObjectDF.iloc[:,ln]
-                # 75% 기준 이유 : M1_PPM_FREE_SCRB_CNT 컬럼이 unique value의 count 최댓값 37k 이면서 유의미한 값을 가진다고 판단
-                # unique의 갯수가 1000개 이상인 경우 제외
-                if (lenNO*0.75) > max(no.value_counts()) and 1000 >= len(no.value_counts()):
-                    nonObjectDFX75Name.append(no.name)
-            except:
-                continue
+        # nonObjectDFX75Name = []
+        # for ln in range(lenNO):
+        #     try:
+        #         no = nonObjectDF.iloc[:,ln]
+        #         # 75% 기준 이유 : M1_PPM_FREE_SCRB_CNT 컬럼이 unique value의 count 최댓값 37k 이면서 유의미한 값을 가진다고 판단
+        #         # unique의 갯수가 1000개 이상인 경우 제외
+        #         if (lenNO*0.75) > max(no.value_counts()):
+        #             nonObjectDFX75Name.append(no.name)
+        #     except:
+        #         continue
 
         # 변수 생성
-        data['nonObject'] = nonObjectDFX75Name
+        data['nonObject'] = nonObjectName
     except:
         print("변수 생성 중 error 발생")
 
@@ -251,7 +265,7 @@ def index(req):
 
     # 추가 변수 생성
     try:
-        addValidation = list(set(objectName + nonObjectDFX75Name))
+        addValidation = list(set(objectName + nonObjectName))
         data['category_add'] = sorted(addValidation)
     except:
         print("추가 변수 생성 중 error 발생")
@@ -414,7 +428,7 @@ def index(req):
 
             # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
             layout = {
-                'xaxis_title': 'values',
+                'xaxis_title': 'unique_values',
                 'yaxis_title': 'counts',
                 # 'barmode': 'stack', 
             }
@@ -455,6 +469,14 @@ def index(req):
                 sel_mul_vc = df[df[selected_category_name]==svdl][selected_add_category].value_counts().sort_index()
                 # 미리 만들어둔 모든 unique Series 와 더한 뒤 null 값은 0으로 채우기
                 add_sel_all_values = (add_sel_all + sel_mul_vc).fillna(0)
+                # 해당되는 전체 값 구하기
+                sum = add_sel_all_values.sum()
+                # 전체 값이 0이 아니라면 나눠 퍼센트로 만들기
+                if sum != 0:
+                    add_sel_all_values = add_sel_all_values / add_sel_all_values.sum()
+                else:
+                    add_sel_all_values = []
+
                 multi_category_line_graphs.append(
                     go.Scatter(x=add_sel_all_index, y=add_sel_all_values, name=str(svdl),)
                 )
@@ -468,8 +490,16 @@ def index(req):
 
     # 꺾은선 그래프 생성
     try:
+        # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
+        line_layout = {
+            'xaxis_title': 'unique_values',
+            'yaxis_title': 'counts(pct)',
+            'legend_title': '범주 unique 목록',
+            # 'barmode': 'stack', 
+        }
+
         # HTML에 전달하기 위한 메소드
-        multi_category_line = plot({'data': multi_category_line_graphs}, output_type='div')
+        multi_category_line = plot({'data': multi_category_line_graphs, 'layout': line_layout}, output_type='div')
 
         data['multi_category_line'] = multi_category_line
     except:
@@ -481,6 +511,9 @@ def index(req):
     try:
         # 레이아웃 설정 (사이즈, 제목 등 추가 설정 가능)
         multi_category_bar_layout = {
+            'xaxis_title': 'unique_values',
+            'yaxis_title': 'counts(pct)',
+            'legend_title': '범주 unique 목록',
             'barmode': 'stack', 
         }
         # HTML에 전달하기 위한 메소드
@@ -509,7 +542,7 @@ def index(req):
             # 행 번호는 없이 바꾼 이름으로 csv 파일 저장 
             selectMatch_index.to_csv(f'make/{under_ip}.csv', index = False)
             # 데이터프레임 다운 버튼 활성화
-            data['download_btn'] = "데이터프레임 다운로드"
+            data['download_btn'] = "csv 다운로드"
         else:
             # 컬럼이 선택되지 않은 경우
             data['selectMatch_index'] = None
