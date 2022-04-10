@@ -34,7 +34,10 @@ global selected_category_no
 global selected_index
 global selected_add_category
 global selected_one_category
+global df
+global nodata
 sel_val = 0.7
+nodata = "파일을 선택해주세요   ---->"
 
 # 초기화시켜줄 메소드
 def reset():
@@ -45,6 +48,8 @@ def reset():
     global selected_index
     global selected_add_category
     global selected_one_category
+    global df
+    global nodata
     sel_val = 0.7                       # 기본 초기값
     inputfile = None                    # 입력한 첨부파일
     selected_category_name = None       # 선택한 카테고리명
@@ -52,8 +57,12 @@ def reset():
     selected_index = None               # 선택한 컬럼
     selected_add_category = None        # 예상 범주와 함께 보여줄 변수
     selected_one_category = None        # 선택한 컬럼 정보 및 꺾은선 그래프로 보여주기 위한 변수
+    df = None
+    nodata = "파일을 선택해주세요   ---->"
 
 def firstSetting(req, data):
+    global df
+    global nodata
     # ip 가져오기
     ip = get_client_ip(req)
     data['ip'] = ip
@@ -65,11 +74,11 @@ def firstSetting(req, data):
     path = f"temp/{ip}.csv"
     # path = "temp/58.238.38.231.csv"
 
-    data['nodata'] = "파일을 선택해주세요   ---->"
-
     return ip, under_ip, filename, path
 
-def dataButton(req, filename):   
+def dataButton(req, filename, data, path):   
+    global df
+    global nodata
     # 초기화 버튼
     try:
         if 'clearAll' in req.POST:
@@ -102,6 +111,11 @@ def dataButton(req, filename):
 
             # 이전에 입력한 항목 초기화
             reset()
+
+            df = makedf(data, path)
+
+            nodata = ""
+
             return 1
 
     except:
@@ -115,7 +129,6 @@ def makedf(data, path):
     try:
         # 지정한 경로에 있는 csv 파일을 읽어오기
         df = pd.read_csv(path)
-        data['nodata'] = ""
         return df
 
     except:
@@ -135,6 +148,8 @@ def index(req):
     global selected_index
     global selected_add_category
     global selected_one_category
+    global df
+    global nodata
 
     # 리턴할 값 모음
     data = {}  
@@ -143,19 +158,24 @@ def index(req):
     ip, under_ip, filename, path = firstSetting(req, data)
 
     # 초기화 버튼, 첨부파일 받아오기, 데이터프레임 만들기
-    btnResult = dataButton(req, filename)
+    btnResult = dataButton(req, filename, data, path)
+    data['nodata'] = nodata
     if btnResult == 0:
-        return render(req, 'category.html', data)
+        return render(req, 'index.html', data)
 
-    df = makedf(data, path)
+    # df = makedf(data, path)
 
-    data['rownum'] = len(df)
-    data['columnnum'] = len(df.columns)
+    try:
+        data['rownum'] = str(len(df)) + "개"
+        data['columnnum'] = str(len(df.columns)) + "개"
 
-    size = os.path.getsize(path)
-    data['filesize'] = str(round(size/(1024*1024), 2)) + "mb"
+        size = os.path.getsize(path)
+        data['filesize'] = str(round(size/(1024*1024), 2)) + "mb"
 
-    return render(req, 'index.html', data)
+        return render(req, 'index.html', data)
+    except:
+        print("index 처리 중 error 발생")
+        return render(req, 'index.html', data)
 
 def category(req):
     # 시간 측정
@@ -169,6 +189,7 @@ def category(req):
     global selected_index
     global selected_add_category
     global selected_one_category
+    global df
 
     # 리턴할 값 모음
     data = {}  
@@ -177,11 +198,12 @@ def category(req):
     ip, under_ip, filename, path = firstSetting(req, data)
 
     # 초기화 버튼, 첨부파일 받아오기, 데이터프레임 만들기
-    btnResult = dataButton(req, filename)
+    btnResult = dataButton(req, filename, data, path)
+    data['nodata'] = nodata
     if btnResult == 0:
         return render(req, 'category.html', data)
 
-    df = makedf(data, path)
+    # df = makedf(data, path)
     
 
     # 전체 데이터프레임의 Null값을 0으로
@@ -442,6 +464,7 @@ def variable(req):
     global selected_index
     global selected_add_category
     global selected_one_category
+    global df
 
     # 리턴할 값 모음
     data = {}  
@@ -450,11 +473,12 @@ def variable(req):
     ip, under_ip, filename, path = firstSetting(req, data)
 
     # 초기화 버튼, 첨부파일 받아오기, 데이터프레임 만들기
-    btnResult = dataButton(req, filename)
+    btnResult = dataButton(req, filename, data, path)
+    data['nodata'] = nodata
     if btnResult == 0:
         return render(req, 'variable.html', data)
 
-    df = makedf(data, path)
+    # df = makedf(data, path)
 
     # 선택한 변수의 Null값을 0으로
     try:
@@ -597,6 +621,7 @@ def makecsv(req):
     global selected_index
     global selected_add_category
     global selected_one_category
+    global df
 
     # 리턴할 값 모음
     data = {}  
@@ -605,11 +630,12 @@ def makecsv(req):
     ip, under_ip, filename, path = firstSetting(req, data)
 
     # 초기화 버튼, 첨부파일 받아오기, 데이터프레임 만들기
-    btnResult = dataButton(req, filename)
+    btnResult = dataButton(req, filename, data, path)
+    data['nodata'] = nodata
     if btnResult == 0:
         return render(req, 'makecsv.html', data)
 
-    df = makedf(data, path)
+    # df = makedf(data, path)
 
     # 컬럼명 추출
     try:
