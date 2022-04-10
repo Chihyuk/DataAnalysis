@@ -51,7 +51,7 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item  ">
+                        <li class="sidebar-item  active">
                             <a href="/makecsv" class="sidebar-link">
                                 <i class="bi bi-stack"></i>
                                 <span>Make csv</span>
@@ -101,56 +101,62 @@
                     </div>
                 </div>
             </div>
+            <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 -->
             <div class="page-content">
                 <section class="row">
                     <div class="col-12 col-lg-12">
-                        <div class="card info_box">
-                            <div class="card-header row mx-0">
-                                <div class="card-header col-lg-7 mx-0 px-3">
-                                    <h4>Category</h4>
+                        <div class="card select_box" style="overflow:auto;">
+                            <form action="" method="post">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-8 mx-0">
+                                        <h4>컬럼 리스트</h4>
+                                    </div>
+                                    <div class="card-body col-lg-4 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">데이터프레임 생성</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-body row mx-1">
-                                <div class="col-sm-12">
-                                    <h5>범주라고 예상 되는 컬럼들의 집합</h5><h7> - 히스토그램으로 확인 가능</h7>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4">
+                                        {% csrf_token %}
+                                        {% for ind in index %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_index" type="checkbox" name="selected_index" value={{ind}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{ind}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                                <br>
-                                <div class="col-sm-12">
-                                    <h5>선택한 예상 범주가 어떤 변수에 의해 영향을 많이 받는지 확인 가능</h5><h7> - 꺽은선 그래프, 막대형 그래프로 확인 가능</h7>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                     <div class="col-12 col-lg-12">
-                        <div class="card info_box">
-                            <div class="card-header row mx-0">
-                                <div class="card-header col-lg-7 mx-0 px-3">
-                                    <h4>Variable</h4>
+                        <div class="card select_box"  style="overflow:auto;">
+                            <div class="row px-3 py-2 mx-2">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>선택한 컬럼</h4>
+                                </div>
+                                <div class="card-body col-lg-4 py-3" style="text-align: right;">
+                                    {% if download_btn %}
+                                        <a href="/download/" download>
+                                            <button class="btn btn-primary">{{download_btn}}</button>
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="card-body row mx-1">
-                                <div class="col-sm-12">
-                                    <h5>문자열이 포함되지 않은 컬럼들의 집합</h5><h7> - 꺾은선 그래프로 확인 가능</h7>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-12">
-                        <div class="card info_box">
-                            <div class="card-header row mx-0">
-                                <div class="card-header col-lg-7 mx-0 px-3">
-                                    <h4>Make csv</h4>
-                                </div>
-                            </div>
-                            <div class="card-body row mx-1">
-                                <div class="col-sm-12">
-                                    <h5>전체 컬럼 중 원하는 컬럼만 선택한 뒤 csv 파일로 다운 가능</h5>
-                                </div>
+                            <div class="card-body pb-4 mx-4 row">
+                                {% for sel_ind in selectMatch_index %}
+                                    <div class="col-12 col-lg-4 py-2">
+                                        {{sel_ind}}
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
+            <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 끝-->
             
         </div>
     </div>

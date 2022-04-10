@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mazer Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/iconly/bold.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/app.css' %}">
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.svg" type="image/x-icon' %}">
+
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active ps">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="logo">
+                            <a href="/">Data Analysis</a>
+                        </div>
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title">Menu</li>
+
+                        <li class="sidebar-item  active">
+                            <a href="/category" class="sidebar-link">
+                                <i class="bi bi-bar-chart-fill"></i>
+                                <span>Category</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="/variable" class="sidebar-link">
+                                <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                                <span>Variable</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="/makecsv" class="sidebar-link">
+                                <i class="bi bi-stack"></i>
+                                <span>Make csv</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; height: 969px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 568px;"></div></div></div>
+        </div>
+        <div id="main">
+            <header class="mb-3">
+                <a href="#" class="burger-btn d-block d-xl-none">
+                    <i class="bi bi-justify fs-3"></i>
+                </a>
+            </header>
+            <div class="page-heading">
+                <div class="row">
+                    <div class="col-12 col-md-2">
+                        <h3>Data Analysis</h3>
+                    </div>
+                    <div class="col-12 col-md-5", style="text-align: right;">
+                        <h5>{{nodata}}</h5>
+                    </div>
+                    <div class="col-12 col-md-5 px-0", style="text-align: right;">
+                        <div class="row">
+                            <div class="col-lg-9">
+                            <!-- 파일 upload 받기 -->
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="file" name="inputfile" accept=".csv" value={{ inputfile }}>
+                                <button class="btn btn-primary">제출</button>
+                            </form>
+                            <!-- 파일 upload 받기 끝 -->
+                            </div>
+                            <div class="col-lg-3">
+                            <!-- 초기화 버튼 -->
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="clearAll" value="clearAll">
+                                <button class="btn btn-primary">초기화</button>
+                            </form>
+                            <!-- 초기화 버튼 끝 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-content">
+                <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <!-- 범주 리스트 선택 -->
+                        <form action="" method="post">
+                            <div class="card info_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-9">
+                                        <h4>예상 범주 리스트</h4>
+                                        <h6>범주 설정 조건</h6>
+                                        <h7>1. 문자열이 포함된 경우</h7><br>
+                                        <h7>2. unique 2개 이상 5개 이하이고 각각의 unique가 2개 이상의 값을 가질 경우</h7>
+                                    </div>
+                                    <div class="card-body col-lg-3 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for cat in category %}
+                                        <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                            <input id="selected_category" type="radio" name="selected_category" value={{cat}}>
+                                        </div>
+                                        <div class="col-12 col-lg-3 px-0 mx-0 py-2">
+                                            {{cat}}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card info_box">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-7 mx-0 px-3">
+                                    <h4><b>{{selected_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입입니다</h6>
+                                    <h6>히스토그램이 나오지 않을 경우 Null값을 없애주세요</h6>
+                                </div>
+                                <div class="col-lg-5 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_null_zero" name="sel_null_zero" value="sel_null_zero">
+                                        <button class="btn btn-primary">전체 Null 값 0으로</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card-body row mx-1">
+                                <div class="col-sm-3">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selVariableNull}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h6>Unique 개수</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selVariableDistinctCount}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h6>Unique 종류</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        {% for dl in selVariableDistinctList %}
+                                            <div class="col-lg-3 mb-3">
+                                                <h6>{{dl}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-12">
+                        <!-- 히스토그램 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-12 mx-0 px-3">
+                                    <h4><b>{{selected_category_name}}</b> 히스토그램</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ category_hist }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 전체 변수 리스트 선택  -->
+                        <form action="" method="post">
+                            <div class="card info_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-9">
+                                        <h4>선택한 예상 범주에 영향을 확인할 다른 변수</h4>
+                                        <h6>변수 리스트 + 예상 범주 리스트</h6>
+                                    </div>
+                                    <div class="card-body col-lg-3 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for cd in category_add %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_add_category" type="radio" name="selected_add_category" value={{cd}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{cd}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card info_box">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-7 mx-0 px-3">
+                                    <h4><b>{{selected_add_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입입니다</h6>
+                                </div>
+                            </div>
+                            <div class="card-body row mx-1">
+                                <div class="col-sm-3">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selAddVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selAddVariableNull}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h6>Unique 개수</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selAddVariableDistinctCount}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h6>Unique 종류</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        {% for dl in selAddVariableDistinctList %}
+                                            <div class="col-lg-3 mb-3">
+                                                <h6>{{dl}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 멀티 라인그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_add_category_name}}와(과) 관계 - 꺾은선그래프</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ multi_category_line }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 멀티 라인그래프 표현 끝 -->
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 멀티 막대그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_add_category_name}}와(과) 관계 - 막대그래프</h4>
+                                    <h6>범례가 표시된 경우 그래프를 확대하면 값을 확인할 수 있습니다</h6>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ multi_category_bar }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 멀티 막대그래프 표현 끝 -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="{% static 'assets/vendors/apexcharts/apexcharts.js' %}"></script>
+    <script src="{% static 'assets/js/pages/dashboard.js' %}"></script>
+
+    <script src="{% static 'assets/js/main.js' %}"></script>
+</body>
+
+</html>

@@ -4,6 +4,9 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
+    path('category/', views.category),
+    path('variable/', views.variable),
+    path('makecsv/', views.makecsv),
     path("download/", views.downloadFile, name="downloadFile"),
     path("train_data_download/", views.downloadTrainDataFile, name="downloadFile"),
     path("train_target_download/", views.downloadTrainTargetFile, name="downloadFile"),

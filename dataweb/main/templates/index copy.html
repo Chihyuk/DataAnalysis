@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mazer Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/iconly/bold.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/app.css' %}">
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.svg" type="image/x-icon' %}">
+
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active ps ps--active-y">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="logo">
+                            <a href="/">Data Analysis</a>
+                        </div>
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title">Menu</li>
+
+                        <li class="sidebar-item  ">
+                            <a href="index.html" class="sidebar-link">
+                                <i class="bi bi-grid-fill"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-stack"></i>
+                                <span>Components</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="component-alert.html">Alert</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-badge.html">Badge</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-breadcrumb.html">Breadcrumb</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-button.html">Button</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-card.html">Card</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-carousel.html">Carousel</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-dropdown.html">Dropdown</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-list-group.html">List Group</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-modal.html">Modal</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-navs.html">Navs</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-pagination.html">Pagination</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-progress.html">Progress</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-spinner.html">Spinner</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="component-tooltip.html">Tooltip</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-collection-fill"></i>
+                                <span>Extra Components</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="extra-component-avatar.html">Avatar</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-sweetalert.html">Sweet Alert</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-toastify.html">Toastify</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-rating.html">Rating</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="extra-component-divider.html">Divider</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-grid-1x2-fill"></i>
+                                <span>Layouts</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="layout-default.html">Default Layout</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="layout-vertical-1-column.html">1 Column</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="layout-vertical-navbar.html">Vertical with Navbar</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="layout-horizontal.html">Horizontal Menu</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-title">Forms &amp; Tables</li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-hexagon-fill"></i>
+                                <span>Form Elements</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="form-element-input.html">Input</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-input-group.html">Input Group</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-select.html">Select</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-radio.html">Radio</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-checkbox.html">Checkbox</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-element-textarea.html">Textarea</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item active ">
+                            <a href="form-layout.html" class="sidebar-link">
+                                <i class="bi bi-file-earmark-medical-fill"></i>
+                                <span>Form Layout</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-pen-fill"></i>
+                                <span>Form Editor</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="form-editor-quill.html">Quill</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-editor-ckeditor.html">CKEditor</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-editor-summernote.html">Summernote</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="form-editor-tinymce.html">TinyMCE</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="table.html" class="sidebar-link">
+                                <i class="bi bi-grid-1x2-fill"></i>
+                                <span>Table</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="table-datatable.html" class="sidebar-link">
+                                <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                                <span>Datatable</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-title">Extra UI</li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-pentagon-fill"></i>
+                                <span>Widgets</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-widgets-chatbox.html">Chatbox</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-widgets-pricing.html">Pricing</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-widgets-todolist.html">To-do List</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-egg-fill"></i>
+                                <span>Icons</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-icons-bootstrap-icons.html">Bootstrap Icons </a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-icons-fontawesome.html">Fontawesome</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-icons-dripicons.html">Dripicons</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-bar-chart-fill"></i>
+                                <span>Charts</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-chart-chartjs.html">ChartJS</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-chart-apexcharts.html">Apexcharts</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="ui-file-uploader.html" class="sidebar-link">
+                                <i class="bi bi-cloud-arrow-up-fill"></i>
+                                <span>File Uploader</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-map-fill"></i>
+                                <span>Maps</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="ui-map-google-map.html">Google Map</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="ui-map-jsvectormap.html">JS Vector Map</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-title">Pages</li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-email.html" class="sidebar-link">
+                                <i class="bi bi-envelope-fill"></i>
+                                <span>Email Application</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-chat.html" class="sidebar-link">
+                                <i class="bi bi-chat-dots-fill"></i>
+                                <span>Chat Application</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-gallery.html" class="sidebar-link">
+                                <i class="bi bi-image-fill"></i>
+                                <span>Photo Gallery</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="application-checkout.html" class="sidebar-link">
+                                <i class="bi bi-basket-fill"></i>
+                                <span>Checkout Page</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-person-badge-fill"></i>
+                                <span>Authentication</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="auth-login.html">Login</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="auth-register.html">Register</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="auth-forgot-password.html">Forgot Password</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class="sidebar-link">
+                                <i class="bi bi-x-octagon-fill"></i>
+                                <span>Errors</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="error-403.html">403</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="error-404.html">404</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="error-500.html">500</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-title">Raise Support</li>
+
+                        <li class="sidebar-item  ">
+                            <a href="https://zuramai.github.io/mazer/docs" class="sidebar-link">
+                                <i class="bi bi-life-preserver"></i>
+                                <span>Documentation</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="https://github.com/zuramai/mazer/blob/main/CONTRIBUTING.md" class="sidebar-link">
+                                <i class="bi bi-puzzle"></i>
+                                <span>Contribute</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item  ">
+                            <a href="https://github.com/zuramai/mazer#donate" class="sidebar-link">
+                                <i class="bi bi-cash"></i>
+                                <span>Donate</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; height: 969px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 568px;"></div></div></div>
+        </div>
+        <div id="main">
+            <header class="mb-3">
+                <a href="#" class="burger-btn d-block d-xl-none">
+                    <i class="bi bi-justify fs-3"></i>
+                </a>
+            </header>
+            <div class="page-heading">
+                <div class="row">
+                    <div class="col-12 col-md-2">
+                        <h3>Data Analysis</h3>
+                    </div>
+                    <div class="col-12 col-md-6", style="text-align: right;">
+                        <h5>{{nodata}}</h5>
+                    </div>
+                    <div class="col-12 col-md-4 px-0", style="text-align: right;">
+                        <div class="row">
+                            <div class="col-lg-9">
+                            <!-- 파일 upload 받기 -->
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="file" name="inputfile" accept=".csv" value={{ inputfile }}>
+                                <button class="btn btn-primary">제출</button>
+                            </form>
+                            <!-- 파일 upload 받기 끝 -->
+                            </div>
+                            <div class="col-lg-3">
+                            <!-- 초기화 버튼 -->
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="clearAll" value="clearAll">
+                                <button class="btn btn-primary">초기화</button>
+                            </form>
+                            <!-- 초기화 버튼 끝 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-content">
+                <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <!-- 전체 변수 리스트 선택  -->
+                        <form action="" method="post">
+                            <div class="card select_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-10">
+                                        <h4>변수 리스트</h4>
+                                        <h6>변수 설정 조건</h6>
+                                        <h7>1. 문자열이 포함된 컬럼은 제외<h7><br>
+                                        {% comment %} <h7>2. 각 unique value의 count 중 최댓값이 전체 행 갯수 90% 이하인 컬럼</h7><br> {% endcomment %}
+                                    </div>
+                                    <div class="card-body col-lg-2 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for noj in nonObject %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_one_category" type="radio" name="selected_one_category" value={{noj}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{noj}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card info_box">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-7 mx-0 px-3">
+                                    <h4><b>{{selected_one_category_name}}</b> 정보</h4>
+                                </div>
+                                <div class="col-lg-5 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_var_null_zero" name="sel_var_null_zero" value="sel_var_null_zero">
+                                        <button class="btn btn-primary">선택한 변수의 Null 값 0으로</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card-body row mx-1">
+                                <div class="col-sm-2">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selOneVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selOneVariableNull}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h6>Unique 개수</h6>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selOneVariableDistinctCount}}</h5>
+                                </div>
+                                <div class="col-lg-2">
+                                    <h6>Unique 종류</h6>
+                                </div>
+                                <div class="col-lg-10">
+                                    <div class="row">
+                                        {% for do in selOneVariableDistinctList %}
+                                            <div class="col-lg-3">
+                                                <h6>{{do}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 라인그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_one_category_name}} 꺾은선그래프</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ one_category_line }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 라인그래프 표현 끝 -->
+                    </div>
+                </section>
+                <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <!-- 범주 리스트 선택 -->
+                        <form action="" method="post">
+                            <div class="card select_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-10">
+                                        <h4>예상 범주 리스트</h4>
+                                        <h6>범주 설정 조건</h6>
+                                        <h7>1. 문자열이 포함된 경우</h7><br>
+                                        <h7>2. unique 2개 이상 5개 이하이고 각각의 unique가 2개 이상의 값을 가질 경우</h7>
+                                    </div>
+                                    <div class="card-body col-lg-2 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for cat in category %}
+                                        <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                            <input id="selected_category" type="radio" name="selected_category" value={{cat}}>
+                                        </div>
+                                        <div class="col-12 col-lg-3 px-0 mx-0 py-2">
+                                            {{cat}}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 전체 변수 리스트 선택  -->
+                        <form action="" method="post">
+                            <div class="card select_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-10">
+                                        <h4>선택한 예상 범주에 영향을 확인할 다른 변수</h4>
+                                        <h6>변수 리스트 + 예상 범주 리스트</h6>
+                                    </div>
+                                    <div class="card-body col-lg-2 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for cd in category_add %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_add_category" type="radio" name="selected_add_category" value={{cd}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{cd}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card info_box">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-7 mx-0 px-3">
+                                    <h4><b>{{selected_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입입니다</h6>
+                                    <h6>히스토그램이 나오지 않을 경우 Null값을 없애주세요</h6>
+                                </div>
+                                <div class="col-lg-5 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_null_zero" name="sel_null_zero" value="sel_null_zero">
+                                        <button class="btn btn-primary">전체 Null 값 0으로</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card-body row mx-1">
+                                <div class="col-sm-2">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selVariableNull}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h6>Unique 개수</h6>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selVariableDistinctCount}}</h5>
+                                </div>
+                                <div class="col-lg-2">
+                                    <h6>Unique 종류</h6>
+                                </div>
+                                <div class="col-lg-10">
+                                    <div class="row">
+                                        {% for dl in selVariableDistinctList %}
+                                            <div class="col-lg-3">
+                                                <h6>{{dl}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 히스토그램 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-12 mx-0 px-3">
+                                    <h4><b>{{selected_category_name}}</b> 히스토그램</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ category_hist }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 변수 리스트 표 그리기 -->
+                        <div class="card info_box">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-7 mx-0 px-3">
+                                    <h4><b>{{selected_add_category_name}}</b> 정보</h4>
+                                    <h6>변수 타입 object는 문자열이 포함된 타입입니다</h6>
+                                </div>
+                            </div>
+                            <div class="card-body row mx-1">
+                                <div class="col-sm-2">
+                                    <h5>변수 타입</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selAddVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selAddVariableNull}}</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <h6>Unique 개수</h6>
+                                </div>
+                                <div class="col-sm-10">
+                                    <h5>{{selAddVariableDistinctCount}}</h5>
+                                </div>
+                                <div class="col-lg-2">
+                                    <h6>Unique 종류</h6>
+                                </div>
+                                <div class="col-lg-10">
+                                    <div class="row">
+                                        {% for dl in selAddVariableDistinctList %}
+                                            <div class="col-lg-3">
+                                                <h6>{{dl}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 멀티 라인그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_add_category_name}}와(과) 관계 - 꺾은선그래프</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ multi_category_line }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 멀티 라인그래프 표현 끝 -->
+                        <!-- 멀티 막대그래프 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_add_category_name}}와(과) 관계 - 막대그래프</h4>
+                                    <h6>범례가 표시된 경우 그래프를 확대하면 값을 확인할 수 있습니다</h6>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ multi_category_bar }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- 멀티 막대그래프 표현 끝 -->
+                    </div>
+                </section>
+            </div>
+            {% comment %} <div class="page-content">
+                <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <!-- tarin % 비율 정하기-->
+                        <div class="card select_box">
+                            <div class="card-header">
+                                <h4>훈련 세트 비율 설정</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <div class="row px-3">
+                                        <div class="col-12 col-lg-1">
+                                            <label> train: </label>
+                                        </div>
+                                        <div class="col-12 col-lg-1">
+                                            <span id="sel_pct">{{ sel_val }}</span>
+                                        </div>
+                                        <input id = "sel_val" type="range" name="sel_val" min="0" max="1.0" step="0.01" value={{ sel_val }} oninput="document.getElementById('sel_pct').innerHTML=this.value;">
+                                        
+                                        <button class="btn btn-primary">확인</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- train % 비율 정하기 끝-->
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- train test 파이차트 표현 -->
+                        <div class="card">
+                            <div class="card-header row mx-0">
+                                <div class="card-header col-lg-4 mx-0 px-3">
+                                    <h4>훈련, 테스트 비율</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ train_pie }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <!-- train test 파이차트 표현 끝 -->
+                    </div>
+                </section>
+            </div> {% endcomment %}
+            <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 -->
+            <div class="page-content">
+                <section class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="card select_box" style="overflow:auto;">
+                            <form action="" method="post">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-8 mx-0">
+                                        <h4>컬럼 리스트</h4>
+                                    </div>
+                                    <div class="card-body col-lg-4 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">데이터프레임 생성</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4">
+                                        {% csrf_token %}
+                                        {% for ind in index %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_index" type="checkbox" name="selected_index" value={{ind}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{ind}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card select_box"  style="overflow:auto;">
+                            <div class="row px-3 py-2 mx-2">
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>선택한 컬럼</h4>
+                                </div>
+                                <div class="card-body col-lg-4 py-3" style="text-align: right;">
+                                    {% if download_btn %}
+                                        <a href="download/" download>
+                                            <button class="btn btn-primary">{{download_btn}}</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-body pb-4 mx-4 row">
+                                {% for sel_ind in selectMatch_index %}
+                                    <div class="col-12 col-lg-4 py-2">
+                                        {{sel_ind}}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- 컬럼 리스트 보여주며 데이터 프레임 다운로드 버튼 생성 끝-->
+            
+        </div>
+    </div>
+    <script src="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="{% static 'assets/vendors/apexcharts/apexcharts.js' %}"></script>
+    <script src="{% static 'assets/js/pages/dashboard.js' %}"></script>
+
+    <script src="{% static 'assets/js/main.js' %}"></script>
+</body>
+
+</html>

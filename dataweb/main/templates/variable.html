@@ -44,7 +44,7 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item  ">
+                        <li class="sidebar-item  active">
                             <a href="/variable" class="sidebar-link">
                                 <i class="bi bi-file-earmark-spreadsheet-fill"></i>
                                 <span>Variable</span>
@@ -103,55 +103,103 @@
             </div>
             <div class="page-content">
                 <section class="row">
-                    <div class="col-12 col-lg-12">
+                    <div class="col-12 col-lg-6">
+                        <!-- 전체 변수 리스트 선택  -->
+                        <form action="" method="post">
+                            <div class="card info_box" style="overflow:auto;">
+                                <div class="row px-3 py-2 mx-2">
+                                    <div class="card-header col-lg-9">
+                                        <h4>변수 리스트</h4>
+                                        <h6>변수 설정 조건</h6>
+                                        <h7>1. 문자열이 포함된 컬럼은 제외<h7><br>
+                                        {% comment %} <h7>2. 각 unique value의 count 중 최댓값이 전체 행 갯수 90% 이하인 컬럼</h7><br> {% endcomment %}
+                                    </div>
+                                    <div class="card-body col-lg-3 py-3" style="text-align: right;">
+                                        <button class="btn btn-primary">선택</button>
+                                    </div>
+                                </div>
+                                <div class="card-content pb-4">
+                                    <div class="row mx-4 py-2">
+                                        {% csrf_token %}
+                                        {% for noj in nonObject %}
+                                            <div class="col-12 col-lg-1 cat_radio_btn py-2">
+                                                <input id="selected_one_category" type="radio" name="selected_one_category" value={{noj}}>
+                                            </div>
+                                            <div class="col-12 col-lg-3 py-2">
+                                                {{noj}}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <!-- 변수 리스트 표 그리기 -->
                         <div class="card info_box">
                             <div class="card-header row mx-0">
-                                <div class="card-header col-lg-7 mx-0 px-3">
-                                    <h4>Category</h4>
+                                <div class="card-header col-lg-6 mx-0 px-3">
+                                    <h4><b>{{selected_one_category_name}}</b> 정보</h4>
+                                </div>
+                                <div class="col-lg-6 mx-0 px-3" style="text-align: right;">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="sel_var_null_zero" name="sel_var_null_zero" value="sel_var_null_zero">
+                                        <button class="btn btn-primary">선택한 변수의 Null 값 0으로</button>
+                                    </form>
                                 </div>
                             </div>
                             <div class="card-body row mx-1">
-                                <div class="col-sm-12">
-                                    <h5>범주라고 예상 되는 컬럼들의 집합</h5><h7> - 히스토그램으로 확인 가능</h7>
+                                <div class="col-sm-3">
+                                    <h5>변수 타입</h5>
                                 </div>
-                                <br>
-                                <div class="col-sm-12">
-                                    <h5>선택한 예상 범주가 어떤 변수에 의해 영향을 많이 받는지 확인 가능</h5><h7> - 꺽은선 그래프, 막대형 그래프로 확인 가능</h7>
+                                <div class="col-sm-9">
+                                    <h5>{{selOneVariableType}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h5>Null 개수</h5>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selOneVariableNull}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h6>Unique 개수</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <h5>{{selOneVariableDistinctCount}}</h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h6>Unique 종류</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        {% for do in selOneVariableDistinctList %}
+                                            <div class="col-lg-3 mb-3">
+                                                <h6>{{do}}</h6>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-12">
-                        <div class="card info_box">
+                        <!-- 라인그래프 표현 -->
+                        <div class="card">
                             <div class="card-header row mx-0">
-                                <div class="card-header col-lg-7 mx-0 px-3">
-                                    <h4>Variable</h4>
+                                <div class="card-header col-lg-8 mx-0 px-3">
+                                    <h4>{{selected_one_category_name}} 꺾은선그래프</h4>
                                 </div>
                             </div>
-                            <div class="card-body row mx-1">
-                                <div class="col-sm-12">
-                                    <h5>문자열이 포함되지 않은 컬럼들의 집합</h5><h7> - 꺾은선 그래프로 확인 가능</h7>
-                                </div>
+                            <div class="card-body">
+                                {% autoescape off %}
+                                    {{ one_category_line }}
+                                {% endautoescape %}
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-lg-12">
-                        <div class="card info_box">
-                            <div class="card-header row mx-0">
-                                <div class="card-header col-lg-7 mx-0 px-3">
-                                    <h4>Make csv</h4>
-                                </div>
-                            </div>
-                            <div class="card-body row mx-1">
-                                <div class="col-sm-12">
-                                    <h5>전체 컬럼 중 원하는 컬럼만 선택한 뒤 csv 파일로 다운 가능</h5>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- 라인그래프 표현 끝 -->
                     </div>
                 </section>
-            </div>
-            
         </div>
     </div>
     <script src="{% static 'assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
