@@ -77,6 +77,8 @@ def firstSetting(req, data):
     return ip, under_ip, filename, path
 
 def dataButton(req, filename, data, path):   
+    # 시간 측정
+    start = time.time()
     global df
     global nodata
     # 초기화 버튼
@@ -92,7 +94,9 @@ def dataButton(req, filename, data, path):
     except:
         print("초기화 실패")
         return 0
-        
+
+    print("초기화 버튼 처리 시간 : ", time.time() - start)    
+    
     # 사용자로부터 첨부파일 받아오기 
     try:
         # 첨부 파일 가져오기
@@ -116,6 +120,7 @@ def dataButton(req, filename, data, path):
 
             nodata = ""
 
+            print("데이터프레임 처리 시간 : ", time.time() - start)    
             return 1
 
     except:
@@ -156,9 +161,11 @@ def index(req):
 
     # 초기 설정
     ip, under_ip, filename, path = firstSetting(req, data)
+    print("초기 설정 이후 시간 : ", time.time() - start)
 
     # 초기화 버튼, 첨부파일 받아오기, 데이터프레임 만들기
     btnResult = dataButton(req, filename, data, path)
+    print("데이터프레임 생성 이후 시간 : ", time.time() - start)
     data['nodata'] = nodata
     if btnResult == 0:
         return render(req, 'index.html', data)
