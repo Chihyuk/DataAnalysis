@@ -216,8 +216,10 @@ def category(req):
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
                 os.remove(filename)
-            # 0으로 만든 데이터프레임 저장
+            print("기존 csv 삭제 후 시간 : ", time.time() - start)
+            # 0으로 만든 데이터프레임 저장 (시간 오래걸림)
             df.to_csv(filename, index=None)
+            print("새로 csv 저장 후 시간 : ", time.time() - start)
             # 데이터프레임을 새 데이터프레임으로 덮어씌우기
             df = pd.read_csv(path)
     except:
@@ -492,10 +494,13 @@ def variable(req):
             # 만약 해당 경로에 같은 이름의 파일이 있는 경우 삭제
             if os.path.isfile(filename):
                 os.remove(filename)
-            # 0으로 만든 데이터프레임 저장
+            print("기존 파일 삭제 후 시간 :", time.time() - start)
+            # 0으로 만든 데이터프레임 저장 (시간 오래 걸린다)
             df.to_csv(filename, index=None)
+            print("csv 파일 저장 후 시간 :", time.time() - start)
             # 데이터프레임을 새 데이터프레임으로 덮어씌우기
             df = pd.read_csv(path)
+            print("다시 저장한 파일 df로 만든 시간 :", time.time() - start)
     except:
         print("변수 null 값 0 만드는 중 실패")
     
